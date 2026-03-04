@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text → Tabulka</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.06);
+    --text: #e8e6e1;
+    --text-dim: #6b6860;
+    --text-mid: #a8a49c;
+    --accent: #f59e0b;
+    --accent-dark: #d97706;
+    --purple: #8b5cf6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header-tag {
+    font-size: 11px; font-weight: 500; letter-spacing: 4px;
+    color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    background: linear-gradient(135deg, #e8e6e1 30%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .glow-line {
+    height: 2px; width: 120px; margin: 0 auto 16px;
+    background: linear-gradient(90deg, transparent, #f59e0b, #ef4444, #8b5cf6, transparent);
+    border-radius: 2px;
+  }
+  .header p {
+    color: var(--text-dim); font-size: 13px;
+    max-width: 460px; margin: 0 auto; line-height: 1.6;
+  }
+
+  /* Glass Panel */
+  .glass {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+  }
+
+  /* Input area */
+  .input-panel { padding: 28px; margin-bottom: 24px; }
+  .input-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+  }
+  .input-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--text-dim); text-transform: uppercase;
+  }
+  .examples { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 20px;
+    resize: vertical;
+    min-height: 180px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  textarea:focus {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+  }
+  textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+  .actions-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .char-count { font-size: 11px; color: #4a4740; }
+  .actions-right { display: flex; gap: 10px; }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 14px;
+    border: none; border-radius: 10px;
+    padding: 12px 32px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-mid);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .btn-icon {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-mid);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-icon:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+  /* Stats */
+  .stats-bar {
+    padding: 16px 24px; margin-bottom: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .stats-left { display: flex; gap: 32px; align-items: center; }
+  .stat-num { color: var(--accent); font-weight: 700; font-size: 20px; }
+  .stat-label {
+    color: var(--text-dim); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    color: #a78bfa; font-size: 11px; font-weight: 500;
+    padding: 5px 12px; border-radius: 20px; letter-spacing: 0.3px;
+  }
+  .stats-right { display: flex; gap: 8px; }
+
+  /* Table */
+  .table-title {
+    font-size: 15px; font-weight: 600; color: var(--text-mid);
+    margin-bottom: 12px; padding-left: 4px;
+  }
+  .table-panel { padding: 4px; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+  th {
+    background: rgba(245, 158, 11, 0.08);
+    color: var(--accent);
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    padding: 14px 18px; text-align: left;
+    cursor: pointer; user-select: none;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+    transition: background 0.2s; white-space: nowrap;
+  }
+  th:hover { background: rgba(245, 158, 11, 0.14); }
+  th:first-child { border-radius: 12px 0 0 0; }
+  th:last-child { border-radius: 0 12px 0 0; }
+
+  td {
+    padding: 12px 18px; font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: #d0cdc6; transition: background 0.15s;
+  }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  tr:last-child td { border-bottom: none; }
+  tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+  tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+
+  .sort-arrow { font-size: 10px; opacity: 0.7; margin-left: 4px; }
+
+  .hint { text-align: center; margin-top: 20px; font-size: 11px; color: #3a3830; }
+
+  /* Result animation */
+  .result-area { display: none; }
+  .result-area.visible {
+    display: block;
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px; }
+    .stats-left { gap: 20px; }
+    th, td { padding: 10px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-tag">Nástroj</div>
+    <h1>Text → Tabulka</h1>
+    <div class="glow-line"></div>
+    <p>Vlož jakýkoliv text — CSV, seznam, věty, tabulátor — a dostaneš strukturovanou tabulku.</p>
+  </div>
+
+  <div class="glass input-panel">
+    <div class="input-bar">
+      <span class="input-label">Vstup</span>
+      <div class="examples">
+        <button class="btn-ghost" onclick="loadExample('csv')">CSV</button>
+        <button class="btn-ghost" onclick="loadExample('tabs')">TSV</button>
+        <button class="btn-ghost" onclick="loadExample('list')">Seznam</button>
+        <button class="btn-ghost" onclick="loadExample('paragraph')">Věty</button>
+      </div>
+    </div>
+    <textarea id="input" placeholder="Sem vlož text k převodu na tabulku..."></textarea>
+    <div class="actions-bar">
+      <span class="char-count" id="charCount"></span>
+      <div class="actions-right">
+        <button class="btn-ghost" id="clearBtn" onclick="clearAll()" style="display:none">Vymazat</button>
+        <button class="btn-primary" id="convertBtn" onclick="convert()" disabled>Převést ⏎</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-area" id="resultArea">
+    <div class="glass stats-bar">
+      <div class="stats-left">
+        <div><div class="stat-num" id="rowCount">0</div><div class="stat-label">Řádků</div></div>
+        <div><div class="stat-num" id="colCount">0</div><div class="stat-label">Sloupců</div></div>
+        <div class="badge" id="methodBadge">⚙ —</div>
+      </div>
+      <div class="stats-right">
+        <button class="btn-icon" onclick="copyTable()" id="copyBtn">⧉ Kopírovat</button>
+        <button class="btn-icon" onclick="exportCSV()">↓ CSV</button>
+      </div>
+    </div>
+
+    <div class="table-title" id="tableTitle" style="display:none"></div>
+
+    <div class="glass table-panel">
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="hint">Klikni na záhlaví sloupce pro řazení</div>
+  </div>
+</div>
+
+<script>
+const EXAMPLES = {
+  csv: `Jméno,Věk,Město,Profese\nJan Novák,32,Praha,Programátor\nMarie Dvořáková,28,Brno,Designérka\nPetr Svoboda,45,Ostrava,Učitel\nEva Králová,37,Plzeň,Lékařka`,
+  list: `Nákupní seznam:\n- Mléko 1l - 25 Kč\n- Chleba žitný - 42 Kč\n- Máslo 250g - 65 Kč\n- Rajčata 1kg - 49 Kč\n- Kuřecí prsa 500g - 89 Kč`,
+  paragraph: `Škoda Kodiaq RS má motor 2.0 TSI o výkonu 245 koní. Zrychlení z 0 na 100 km/h zvládne za 6.6 sekundy. Maximální rychlost je 232 km/h. Objem kufru je 835 litrů. Hmotnost vozu činí 1799 kg. Spotřeba v kombinovaném cyklu je 8.9 l/100km.`,
+  tabs: `Produkt\tKategorie\tCena\tSklad\niPhone 15\tTelefony\t24990\t150\nMacBook Air\tNotebooky\t32990\t45\nAirPods Pro\tSluchátka\t7490\t320\niPad Air\tTablety\t18990\t80`
+};
+
+let currentResult = null;
+let sortCol = null;
+let sortDir = 'asc';
+
+const inputEl = document.getElementById('input');
+const convertBtn = document.getElementById('convertBtn');
+const clearBtn = document.getElementById('clearBtn');
+const charCount = document.getElementById('charCount');
+const resultArea = document.getElementById('resultArea');
+
+inputEl.addEventListener('input', () => {
+  const v = inputEl.value.trim();
+  convertBtn.disabled = !v;
+  clearBtn.style.display = v ? '' : 'none';
+  if (v) {
+    const lines = v.split('\n').length;
+    charCount.textContent = `${lines} řádků · ${inputEl.value.length} znaků`;
+  } else {
+    charCount.textContent = '';
+  }
+});
+
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    convert();
+  }
+});
+
+function loadExample(key) {
+  inputEl.value = EXAMPLES[key];
+  inputEl.dispatchEvent(new Event('input'));
+  resultArea.classList.remove('visible');
+}
+
+function clearAll() {
+  inputEl.value = '';
+  inputEl.dispatchEvent(new Event('input'));
+  resultArea.classList.remove('visible');
+  currentResult = null;
+}
+
+function parseTextToTable(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  if (!lines.length) return { headers: [], rows: [] };
+
+  // CSV
+  if (lines[0].includes(',') && lines.every(l => l.split(',').length === lines[0].split(',').length)) {
+    return { headers: lines[0].split(',').map(h => h.trim()), rows: lines.slice(1).map(l => l.split(',').map(c => c.trim())), method: 'CSV (čárka)' };
+  }
+
+  // TSV
+  if (lines[0].includes('\t') && lines.every(l => l.split('\t').length === lines[0].split('\t').length)) {
+    return { headers: lines[0].split('\t').map(h => h.trim()), rows: lines.slice(1).map(l => l.split('\t').map(c => c.trim())), method: 'TSV (tabulátor)' };
+  }
+
+  // Semicolon
+  if (lines[0].includes(';') && lines.every(l => l.split(';').length === lines[0].split(';').length && l.split(';').length > 1)) {
+    return { headers: lines[0].split(';').map(h => h.trim()), rows: lines.slice(1).map(l => l.split(';').map(c => c.trim())), method: 'Středník' };
+  }
+
+  // Pipe
+  if (lines[0].includes('|') && lines.every(l => l.split('|').length === lines[0].split('|').length && l.split('|').length > 1)) {
+    const all = lines.map(l => l.split('|').map(c => c.trim()).filter(c => c !== ''));
+    const filtered = all.filter(r => !r.every(c => /^[-:]+$/.test(c)));
+    if (filtered.length > 1) return { headers: filtered[0], rows: filtered.slice(1), method: 'Pipe (|)' };
+  }
+
+  // List
+  const listLines = lines.filter(l => /^\s*[-•*]\s+/.test(l));
+  if (listLines.length >= 2) {
+    const titleLine = lines.find(l => !/^\s*[-•*]\s+/.test(l));
+    const items = listLines.map(l => l.replace(/^\s*[-•*]\s+/, '').trim());
+    if (items.every(i => i.includes(' - '))) {
+      const parts = items.map(i => i.split(' - ').map(p => p.trim()));
+      const maxCols = Math.max(...parts.map(p => p.length));
+      const colNames = maxCols === 2 ? ['Položka', 'Hodnota'] : maxCols === 3 ? ['Položka', 'Detail', 'Hodnota'] : Array.from({ length: maxCols }, (_, i) => `Sloupec ${i + 1}`);
+      const rows = parts.map(p => { while (p.length < maxCols) p.push(''); return p; });
+      return { headers: colNames, rows, method: 'Seznam (pomlčka)', title: titleLine?.replace(/:$/, '').trim() };
+    }
+    return { headers: ['#', 'Položka'], rows: items.map((item, i) => [String(i + 1), item]), method: 'Seznam', title: titleLine?.replace(/:$/, '').trim() };
+  }
+
+  // Key-value sentences
+  const kvPattern = /(.+?)\s+(?:je|má|činí|dosahuje|zvládne|nabízí|disponuje|obsahuje|váží)\s+(.+?)\.?\s*$/i;
+  const kvPairs = lines.join(' ').split(/\.\s*/).filter(s => s.trim()).map(s => { const m = s.trim().match(kvPattern); return m ? [m[1].trim(), m[2].trim()] : null; }).filter(Boolean);
+  if (kvPairs.length >= 2) return { headers: ['Vlastnost', 'Hodnota'], rows: kvPairs, method: 'Věty (klíč-hodnota)' };
+
+  // Number extraction
+  const sentences = lines.join(' ').split(/\.\s*/).filter(s => s.trim());
+  const numSentences = sentences.filter(s => /\d/.test(s));
+  if (numSentences.length >= 2) {
+    const rows = numSentences.map(s => {
+      const numMatch = s.match(/([\d\s,.]+\s*(?:koní|km\/h|l|kg|Kč|%|mm|cm|m|kW|Nm|sekund[ay]?|minut|hodin|litrů|l\/100km)?)\s*$/i) || s.match(/([\d,.]+)/);
+      if (numMatch) { const v = numMatch[1].trim(); return [s.replace(numMatch[0], '').trim(), v]; }
+      return [s.trim(), ''];
+    });
+    return { headers: ['Popis', 'Hodnota'], rows, method: 'Extrakce čísel' };
+  }
+
+  // Fallback
+  return { headers: ['#', 'Řádek'], rows: lines.map((l, i) => [String(i + 1), l.trim()]), method: 'Řádky textu' };
+}
+
+function convert() {
+  const text = inputEl.value;
+  if (!text.trim()) return;
+  currentResult = parseTextToTable(text);
+  sortCol = null;
+  sortDir = 'asc';
+  renderResult();
+}
+
+function renderResult() {
+  if (!currentResult) return;
+  document.getElementById('rowCount').textContent = currentResult.rows.length;
+  document.getElementById('colCount').textContent = currentResult.headers.length;
+  document.getElementById('methodBadge').textContent = '⚙ ' + currentResult.method;
+
+  const titleEl = document.getElementById('tableTitle');
+  if (currentResult.title) { titleEl.textContent = currentResult.title; titleEl.style.display = ''; }
+  else { titleEl.style.display = 'none'; }
+
+  const rows = getSortedRows();
+
+  // Header
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = '<tr>' + currentResult.headers.map((h, i) =>
+    `<th onclick="handleSort(${i})">${esc(h)}${sortCol === i ? `<span class="sort-arrow">${sortDir === 'asc' ? '▲' : '▼'}</span>` : ''}</th>`
+  ).join('') + '</tr>';
+
+  // Body
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = rows.map(row =>
+    '<tr>' + row.map(cell => `<td>${esc(cell)}</td>`).join('') + '</tr>'
+  ).join('');
+
+  resultArea.classList.add('visible');
+}
+
+function getSortedRows() {
+  if (!currentResult) return [];
+  const rows = [...currentResult.rows];
+  if (sortCol === null) return rows;
+  return rows.sort((a, b) => {
+    const va = a[sortCol] || '', vb = b[sortCol] || '';
+    const na = parseFloat(va.replace(/\s/g, '').replace(',', '.'));
+    const nb = parseFloat(vb.replace(/\s/g, '').replace(',', '.'));
+    if (!isNaN(na) && !isNaN(nb)) return sortDir === 'asc' ? na - nb : nb - na;
+    return sortDir === 'asc' ? va.localeCompare(vb, 'cs') : vb.localeCompare(va, 'cs');
+  });
+}
+
+function handleSort(idx) {
+  if (sortCol === idx) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortCol = idx; sortDir = 'asc'; }
+  renderResult();
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function copyTable() {
+  if (!currentResult) return;
+  const rows = getSortedRows();
+  const text = [currentResult.headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Zkopírováno';
+    setTimeout(() => btn.textContent = '⧉ Kopírovat', 2000);
+  });
+}
+
+function exportCSV() {
+  if (!currentResult) return;
+  const rows = getSortedRows();
+  const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const csv = [currentResult.headers.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'tabulka.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
