@@ -1,239 +1,154 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Text → Tabulka v2</title>
+<title>Text → Tabulka v3</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: rgba(255,255,255,0.03);
-    --border: rgba(255,255,255,0.06);
-    --text: #e8e6e1;
-    --text-dim: #6b6860;
-    --text-mid: #a8a49c;
-    --accent: #f59e0b;
-    --accent-dark: #d97706;
-    --purple: #8b5cf6;
-    --green: #22c55e;
-    --red: #ef4444;
+  :root { --transition-theme: background 0.35s, color 0.35s, border-color 0.35s, box-shadow 0.35s; }
+  [data-theme="dark"] {
+    --bg:#0a0a0f;--bg2:#12121a;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);
+    --text:#e8e6e1;--text-dim:#6b6860;--text-mid:#a8a49c;--accent:#f59e0b;--accent-dark:#d97706;
+    --purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+    --th-bg:rgba(245,158,11,0.08);--th-border:rgba(245,158,11,0.15);
+    --td-hover:rgba(255,255,255,0.02);--td-border:rgba(255,255,255,0.04);
+    --input-bg:rgba(255,255,255,0.02);--input-border:rgba(255,255,255,0.08);
+    --glass-from:rgba(255,255,255,0.03);--glass-to:rgba(255,255,255,0.01);
+    --cell-text:#d0cdc6;--badge-bg:rgba(139,92,246,0.1);--badge-border:rgba(139,92,246,0.2);
+    --type-num:#f59e0b;--type-date:#8b5cf6;--type-curr:#22c55e;--type-text:#6b6860;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    min-height: 100vh; background: var(--bg); color: var(--text);
-    font-family: 'JetBrains Mono', monospace; line-height: 1.6;
+  [data-theme="light"] {
+    --bg:#f5f4f0;--bg2:#eae9e4;--surface:rgba(0,0,0,0.02);--border:rgba(0,0,0,0.08);
+    --text:#1a1a1f;--text-dim:#8a8780;--text-mid:#5a5750;--accent:#d97706;--accent-dark:#b45309;
+    --purple:#7c3aed;--green:#16a34a;--red:#dc2626;--blue:#2563eb;
+    --th-bg:rgba(217,119,6,0.08);--th-border:rgba(217,119,6,0.2);
+    --td-hover:rgba(0,0,0,0.02);--td-border:rgba(0,0,0,0.06);
+    --input-bg:rgba(0,0,0,0.02);--input-border:rgba(0,0,0,0.12);
+    --glass-from:rgba(255,255,255,0.7);--glass-to:rgba(255,255,255,0.4);
+    --cell-text:#3a3a3f;--badge-bg:rgba(124,58,237,0.08);--badge-border:rgba(124,58,237,0.15);
+    --type-num:#d97706;--type-date:#7c3aed;--type-curr:#16a34a;--type-text:#8a8780;
   }
-  .container { max-width: 1060px; margin: 0 auto; padding: 48px 24px; }
-
-  /* Header */
-  .header { text-align: center; margin-bottom: 48px; }
-  .header-tag { font-size: 11px; font-weight: 500; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; }
-  .header h1 {
-    font-family: 'Instrument Sans', sans-serif; font-size: clamp(28px, 5vw, 42px); font-weight: 700;
-    background: linear-gradient(135deg, #e8e6e1 30%, #f59e0b 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    line-height: 1.2; margin-bottom: 16px;
-  }
-  .glow-line { height: 2px; width: 120px; margin: 0 auto 16px; background: linear-gradient(90deg, transparent, #f59e0b, #ef4444, #8b5cf6, transparent); border-radius: 2px; }
-  .header p { color: var(--text-dim); font-size: 13px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
-
-  .glass {
-    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-    border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(20px);
-  }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 4px; border: 1px solid var(--border); }
-  .tab {
-    flex: 1; padding: 10px 16px; text-align: center; font-size: 12px; font-weight: 500;
-    color: var(--text-dim); cursor: pointer; border-radius: 8px; border: none;
-    background: transparent; font-family: inherit; transition: all 0.2s; letter-spacing: 0.5px;
-  }
-  .tab:hover { color: var(--text-mid); background: rgba(255,255,255,0.03); }
-  .tab.active { color: var(--accent); background: rgba(245,158,11,0.1); }
-
-  /* Input */
-  .input-panel { padding: 28px; margin-bottom: 24px; }
-  .input-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-  .input-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase; }
-  .examples { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  textarea {
-    width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px; color: var(--text); font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; line-height: 1.7; padding: 20px; resize: vertical; min-height: 180px;
-    outline: none; transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  textarea:focus { border-color: rgba(245,158,11,0.4); box-shadow: 0 0 0 3px rgba(245,158,11,0.08); }
-  textarea::placeholder { color: rgba(255,255,255,0.2); }
-
-  .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 8px; }
-  .char-count { font-size: 11px; color: #4a4740; }
-  .actions-right { display: flex; gap: 10px; }
-
-  /* Drop zone */
-  .dropzone {
-    border: 2px dashed rgba(255,255,255,0.1); border-radius: 16px; padding: 60px 40px;
-    text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 24px;
-  }
-  .dropzone:hover, .dropzone.dragover {
-    border-color: var(--accent); background: rgba(245,158,11,0.04);
-  }
-  .dropzone-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
-  .dropzone-text { font-size: 14px; color: var(--text-mid); margin-bottom: 8px; }
-  .dropzone-hint { font-size: 11px; color: var(--text-dim); }
-  .dropzone input[type="file"] { display: none; }
-
-  /* Buttons */
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: var(--bg);
-    font-family: inherit; font-weight: 600; font-size: 14px; border: none; border-radius: 10px;
-    padding: 12px 32px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; letter-spacing: 0.5px;
-  }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(245,158,11,0.25); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary:disabled { opacity: 0.4; cursor: default; transform: none; box-shadow: none; }
-
-  .btn-ghost {
-    background: rgba(255,255,255,0.04); color: var(--text-mid); font-family: inherit;
-    font-size: 11px; font-weight: 500; border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px; padding: 8px 14px; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); border-color: rgba(255,255,255,0.15); }
-
-  .btn-icon {
-    background: rgba(255,255,255,0.04); color: var(--text-mid); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px; padding: 8px 14px; cursor: pointer; font-family: inherit;
-    font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-icon:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-
-  .btn-sm {
-    background: rgba(255,255,255,0.04); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit;
-    font-size: 10px; font-weight: 500; transition: all 0.2s;
-  }
-  .btn-sm:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-  .btn-sm.danger:hover { background: rgba(239,68,68,0.15); color: var(--red); border-color: rgba(239,68,68,0.3); }
-  .btn-sm.success:hover { background: rgba(34,197,94,0.15); color: var(--green); border-color: rgba(34,197,94,0.3); }
-
-  /* Stats */
-  .stats-bar {
-    padding: 16px 24px; margin-bottom: 16px; display: flex; justify-content: space-between;
-    align-items: center; flex-wrap: wrap; gap: 16px;
-  }
-  .stats-left { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
-  .stat-num { color: var(--accent); font-weight: 700; font-size: 20px; }
-  .stat-label { color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px; background: rgba(139,92,246,0.1);
-    border: 1px solid rgba(139,92,246,0.2); color: #a78bfa; font-size: 11px; font-weight: 500;
-    padding: 5px 12px; border-radius: 20px;
-  }
-
-  /* Export bar */
-  .export-bar {
-    padding: 12px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
-  .export-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase; margin-right: 8px; }
-
-  /* Edit toolbar */
-  .edit-bar {
-    padding: 12px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
-  .edit-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase; margin-right: 8px; }
-
-  /* Table */
-  .table-title { font-size: 15px; font-weight: 600; color: var(--text-mid); margin-bottom: 12px; padding-left: 4px; }
-  .table-panel { padding: 4px; }
-  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: separate; border-spacing: 0; }
-
-  th {
-    background: rgba(245,158,11,0.08); color: var(--accent); font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 1.2px; padding: 14px 18px; text-align: left;
-    cursor: pointer; user-select: none; border-bottom: 1px solid rgba(245,158,11,0.15);
-    transition: background 0.2s; white-space: nowrap;
-  }
-  th:hover { background: rgba(245,158,11,0.14); }
-  th:first-child { border-radius: 12px 0 0 0; }
-  th:last-child { border-radius: 0 12px 0 0; }
-
-  th input.header-edit {
-    background: transparent; border: none; border-bottom: 1px solid var(--accent); color: var(--accent);
-    font-family: inherit; font-size: 11px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 1.2px; outline: none; width: 100%; padding: 0;
-  }
-
-  td {
-    padding: 12px 18px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
-    color: #d0cdc6; transition: background 0.15s; position: relative;
-  }
-  td.editing { padding: 4px; }
-  td.editing input {
-    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(245,158,11,0.3);
-    border-radius: 6px; color: var(--text); font-family: inherit; font-size: 13px;
-    padding: 8px 14px; outline: none;
-  }
-  td.editing input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(245,158,11,0.1); }
-
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  tr:last-child td { border-bottom: none; }
-  tr:last-child td:first-child { border-radius: 0 0 0 12px; }
-  tr:last-child td:last-child { border-radius: 0 0 12px 0; }
-
-  tr.selected td { background: rgba(245,158,11,0.06); }
-
-  .sort-arrow { font-size: 10px; opacity: 0.7; margin-left: 4px; }
-  .hint { text-align: center; margin-top: 20px; font-size: 11px; color: #3a3830; }
-
-  .result-area { display: none; }
-  .result-area.visible { display: block; animation: fadeInUp 0.4s ease-out; }
-  @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px;
-    font-size: 12px; font-weight: 500; z-index: 1000; animation: toastIn 0.3s ease-out;
-    display: none; border: 1px solid;
-  }
-  .toast.success { background: rgba(34,197,94,0.12); color: var(--green); border-color: rgba(34,197,94,0.25); }
-  .toast.info { background: rgba(139,92,246,0.12); color: #a78bfa; border-color: rgba(139,92,246,0.25); }
-  .toast.show { display: block; }
-  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Row actions */
-  .row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
-  tr:hover .row-actions { opacity: 1; }
-
-  @media (max-width: 600px) {
-    .container { padding: 24px 16px; }
-    .stats-left { gap: 20px; }
-    th, td { padding: 10px 12px; font-size: 12px; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.6;transition:var(--transition-theme)}
+  .container{max-width:1100px;margin:0 auto;padding:40px 24px}
+  .header{text-align:center;margin-bottom:40px;position:relative}
+  .header-tag{font-size:11px;font-weight:500;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px}
+  .header h1{font-family:'Instrument Sans',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:700;background:linear-gradient(135deg,var(--text) 30%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:16px}
+  .glow-line{height:2px;width:120px;margin:0 auto 16px;background:linear-gradient(90deg,transparent,var(--accent),var(--red),var(--purple),transparent);border-radius:2px}
+  .header p{color:var(--text-dim);font-size:13px;max-width:520px;margin:0 auto;line-height:1.6}
+  .theme-toggle{position:absolute;top:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:18px;transition:all 0.2s}
+  .theme-toggle:hover{background:var(--td-hover);border-color:var(--accent)}
+  .glass{background:linear-gradient(135deg,var(--glass-from),var(--glass-to));border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(20px);transition:var(--transition-theme)}
+  .tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
+  .tab{flex:1;padding:10px 16px;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;border-radius:8px;border:none;background:transparent;font-family:inherit;transition:all 0.2s;letter-spacing:0.5px}
+  .tab:hover{color:var(--text-mid);background:var(--td-hover)}
+  .tab.active{color:var(--accent);background:var(--th-bg)}
+  .input-panel{padding:28px;margin-bottom:24px}
+  .input-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .input-label{font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase}
+  .examples{display:flex;gap:6px;flex-wrap:wrap}
+  textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;padding:20px;resize:vertical;min-height:160px;outline:none;transition:border-color 0.3s,box-shadow 0.3s}
+  textarea:focus{border-color:rgba(245,158,11,0.4);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+  textarea::placeholder{color:var(--text-dim);opacity:0.5}
+  .actions-bar{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:8px}
+  .char-count{font-size:11px;color:var(--text-dim)}
+  .actions-right{display:flex;gap:10px}
+  .dropzone{border:2px dashed var(--input-border);border-radius:16px;padding:60px 40px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:24px}
+  .dropzone:hover,.dropzone.dragover{border-color:var(--accent);background:var(--th-bg)}
+  .dropzone-icon{font-size:48px;margin-bottom:16px;opacity:0.4}
+  .dropzone-text{font-size:14px;color:var(--text-mid);margin-bottom:8px}
+  .dropzone-hint{font-size:11px;color:var(--text-dim)}
+  .dropzone input[type="file"]{display:none}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#0a0a0f;font-family:inherit;font-weight:600;font-size:14px;border:none;border-radius:10px;padding:12px 32px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;letter-spacing:0.5px}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,0.25)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary:disabled{opacity:0.4;cursor:default;transform:none;box-shadow:none}
+  .btn-ghost{background:var(--surface);color:var(--text-mid);font-family:inherit;font-size:11px;font-weight:500;border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;transition:all 0.2s}
+  .btn-ghost:hover{background:var(--td-hover);color:var(--text);border-color:var(--accent)}
+  .btn-icon{background:var(--surface);color:var(--text-mid);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+  .btn-icon:hover{background:var(--td-hover);color:var(--text)}
+  .btn-icon:disabled{opacity:0.3;cursor:default}
+  .btn-sm{background:var(--surface);color:var(--text-dim);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit;font-size:10px;font-weight:500;transition:all 0.2s}
+  .btn-sm:hover{background:var(--td-hover);color:var(--text)}
+  .btn-sm.danger:hover{background:rgba(239,68,68,0.15);color:var(--red);border-color:rgba(239,68,68,0.3)}
+  .btn-sm.success:hover{background:rgba(34,197,94,0.15);color:var(--green);border-color:rgba(34,197,94,0.3)}
+  .search-bar{padding:12px 24px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .search-input{flex:1;min-width:200px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;padding:8px 14px 8px 34px;outline:none;transition:border-color 0.3s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b6860' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+  .search-input:focus{border-color:var(--accent)}
+  .filter-select{background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:11px;padding:8px 12px;outline:none;cursor:pointer}
+  .filter-count{font-size:11px;color:var(--text-dim)}
+  .stats-bar{padding:16px 24px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .stats-left{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+  .stat-num{color:var(--accent);font-weight:700;font-size:20px}
+  .stat-label{color:var(--text-dim);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:var(--badge-bg);border:1px solid var(--badge-border);color:#a78bfa;font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px}
+  .undo-bar{display:flex;gap:4px;align-items:center}
+  .toolbar-row{padding:10px 24px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .toolbar-label{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-right:8px}
+  .toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 6px}
+  .type-tag{font-size:9px;font-weight:600;letter-spacing:0.5px;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+  .type-num{background:rgba(245,158,11,0.12);color:var(--type-num)}
+  .type-date{background:rgba(139,92,246,0.12);color:var(--type-date)}
+  .type-curr{background:rgba(34,197,94,0.12);color:var(--type-curr)}
+  .type-text{background:rgba(107,104,96,0.12);color:var(--type-text)}
+  .saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer}
+  .saved-item:hover{background:var(--td-hover)}
+  .saved-item:last-child{border-bottom:none}
+  .saved-name{font-size:13px;font-weight:500;color:var(--text)}
+  .saved-meta{font-size:11px;color:var(--text-dim)}
+  .table-title{font-size:15px;font-weight:600;color:var(--text-mid);margin-bottom:12px;padding-left:4px}
+  .table-panel{padding:4px}
+  .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th{background:var(--th-bg);color:var(--accent);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;padding:12px 16px;text-align:left;cursor:pointer;user-select:none;border-bottom:1px solid var(--th-border);transition:background 0.2s;white-space:nowrap}
+  th:hover{background:rgba(245,158,11,0.14)}
+  th:first-child{border-radius:12px 0 0 0}
+  th:last-child{border-radius:0 12px 0 0}
+  th input.header-edit{background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--accent);font-family:inherit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;outline:none;width:100%;padding:0}
+  td{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--td-border);color:var(--cell-text);transition:background 0.15s;position:relative}
+  td.editing{padding:4px}
+  td.editing input{width:100%;background:var(--input-bg);border:1px solid rgba(245,158,11,0.3);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;padding:6px 12px;outline:none}
+  td.editing input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(245,158,11,0.1)}
+  td.num-cell{font-variant-numeric:tabular-nums;text-align:right}
+  td.curr-cell{font-variant-numeric:tabular-nums;text-align:right;color:var(--green)}
+  td.date-cell{color:var(--purple)}
+  td mark{background:rgba(245,158,11,0.25);color:var(--text);border-radius:2px;padding:0 2px}
+  tr:hover td{background:var(--td-hover)}
+  tr:last-child td{border-bottom:none}
+  tr:last-child td:first-child{border-radius:0 0 0 12px}
+  tr:last-child td:last-child{border-radius:0 0 12px 0}
+  tr.selected td{background:rgba(245,158,11,0.06)}
+  .sort-arrow{font-size:10px;opacity:0.7;margin-left:4px}
+  .hint{text-align:center;margin-top:20px;font-size:11px;color:var(--text-dim)}
+  .result-area{display:none}
+  .result-area.visible{display:block;animation:fadeInUp 0.4s ease-out}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:500;z-index:1000;animation:toastIn 0.3s ease-out;display:none;border:1px solid;font-family:'JetBrains Mono',monospace}
+  .toast.success{background:rgba(34,197,94,0.12);color:var(--green);border-color:rgba(34,197,94,0.25)}
+  .toast.info{background:rgba(139,92,246,0.12);color:#a78bfa;border-color:rgba(139,92,246,0.25)}
+  .toast.show{display:block}
+  @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:640px){.container{padding:24px 16px}.stats-left{gap:16px}th,td{padding:8px 10px;font-size:11px}.toolbar-row{padding:8px 16px}}
 </style>
 </head>
 <body>
-
 <div class="container">
   <div class="header">
-    <div class="header-tag">Nástroj v2</div>
+    <div class="header-tag">Nástroj v3</div>
     <h1>Text → Tabulka</h1>
     <div class="glow-line"></div>
-    <p>Vlož text, nahraj soubor — uprav tabulku přímo v prohlížeči a exportuj kam potřebuješ.</p>
+    <p>Vlož text, nahraj soubor — uprav, filtruj, vizualizuj a exportuj kam potřebuješ.</p>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Přepnout téma" id="themeBtn">🌙</button>
   </div>
-
-  <!-- Input tabs -->
   <div class="tabs">
     <button class="tab active" onclick="switchTab('text')">✎ Vložit text</button>
     <button class="tab" onclick="switchTab('file')">⇪ Nahrát soubor</button>
+    <button class="tab" onclick="switchTab('saved')">💾 Uložené</button>
   </div>
-
-  <!-- Text input -->
   <div id="tabText">
     <div class="glass input-panel">
       <div class="input-bar">
@@ -255,31 +170,45 @@
       </div>
     </div>
   </div>
-
-  <!-- File drop -->
   <div id="tabFile" style="display:none">
     <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
       <div class="dropzone-icon">📄</div>
       <div class="dropzone-text">Přetáhni sem soubor nebo klikni pro výběr</div>
-      <div class="dropzone-hint">Podporované formáty: TXT, CSV, TSV, JSON</div>
-      <input type="file" id="fileInput" accept=".txt,.csv,.tsv,.json,.md" onchange="handleFile(event)">
+      <div class="dropzone-hint">Podporované formáty: TXT, CSV, TSV, JSON, Excel (.xlsx, .xls)</div>
+      <input type="file" id="fileInput" accept=".txt,.csv,.tsv,.json,.md,.xlsx,.xls" onchange="handleFile(event)">
     </div>
   </div>
-
-  <!-- Result -->
+  <div id="tabSaved" style="display:none">
+    <div class="glass" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span class="input-label">Uložené tabulky</span>
+        <button class="btn-sm danger" onclick="clearSaved()">Smazat vše</button>
+      </div>
+      <div id="savedList"></div>
+      <div id="savedEmpty" style="text-align:center;padding:32px;color:var(--text-dim);font-size:12px">Zatím žádné uložené tabulky.<br>Po převodu textu můžeš tabulku uložit.</div>
+    </div>
+  </div>
   <div class="result-area" id="resultArea">
-    <!-- Stats -->
     <div class="glass stats-bar">
       <div class="stats-left">
         <div><div class="stat-num" id="rowCount">0</div><div class="stat-label">Řádků</div></div>
         <div><div class="stat-num" id="colCount">0</div><div class="stat-label">Sloupců</div></div>
         <div class="badge" id="methodBadge">⚙ —</div>
       </div>
+      <div class="undo-bar">
+        <button class="btn-icon" id="undoBtn" onclick="undo()" disabled title="Zpět (Ctrl+Z)">↩ Zpět</button>
+        <button class="btn-icon" id="redoBtn" onclick="redo()" disabled title="Vpřed (Ctrl+Y)">↪ Vpřed</button>
+        <div class="toolbar-sep"></div>
+        <button class="btn-icon" onclick="saveTable()">💾 Uložit</button>
+      </div>
     </div>
-
-    <!-- Export bar -->
-    <div class="glass export-bar">
-      <span class="export-label">Export</span>
+    <div class="glass search-bar">
+      <input class="search-input" id="searchInput" type="text" placeholder="Hledat v tabulce..." oninput="applyFilter()">
+      <select class="filter-select" id="filterCol" onchange="applyFilter()"><option value="-1">Všechny sloupce</option></select>
+      <span class="filter-count" id="filterCount"></span>
+    </div>
+    <div class="glass toolbar-row">
+      <span class="toolbar-label">Export</span>
       <button class="btn-icon" onclick="copyTable()">⧉ Kopírovat</button>
       <button class="btn-icon" onclick="exportCSV()">↓ CSV</button>
       <button class="btn-icon" onclick="exportExcel()">↓ Excel</button>
@@ -287,371 +216,110 @@
       <button class="btn-icon" onclick="exportMarkdown()">↓ Markdown</button>
       <button class="btn-icon" onclick="exportJSON()">↓ JSON</button>
     </div>
-
-    <!-- Edit bar -->
-    <div class="glass edit-bar">
-      <span class="edit-label">Úpravy</span>
+    <div class="glass toolbar-row">
+      <span class="toolbar-label">Úpravy</span>
       <button class="btn-sm success" onclick="addRow()">+ Řádek</button>
       <button class="btn-sm success" onclick="addColumn()">+ Sloupec</button>
       <button class="btn-sm danger" onclick="deleteSelected()">✕ Smazat vybrané</button>
       <button class="btn-sm" onclick="toggleEditMode()" id="editToggle">✎ Režim úprav</button>
     </div>
-
     <div class="table-title" id="tableTitle" style="display:none"></div>
-
     <div class="glass table-panel">
       <div class="table-wrap">
-        <table id="dataTable">
-          <thead id="tableHead"></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+        <table id="dataTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
       </div>
     </div>
-    <div class="hint" id="tableHint">Klikni na záhlaví pro řazení · Dvojklik na buňku pro editaci</div>
+    <div class="hint" id="tableHint">Klikni na záhlaví pro řazení · Dvojklik na buňku pro editaci · Ctrl+Z / Ctrl+Y</div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-const EXAMPLES = {
-  csv: `Jméno,Věk,Město,Profese\nJan Novák,32,Praha,Programátor\nMarie Dvořáková,28,Brno,Designérka\nPetr Svoboda,45,Ostrava,Učitel\nEva Králová,37,Plzeň,Lékařka`,
-  list: `Nákupní seznam:\n- Mléko 1l - 25 Kč\n- Chleba žitný - 42 Kč\n- Máslo 250g - 65 Kč\n- Rajčata 1kg - 49 Kč\n- Kuřecí prsa 500g - 89 Kč`,
-  paragraph: `Škoda Kodiaq RS má motor 2.0 TSI o výkonu 245 koní. Zrychlení z 0 na 100 km/h zvládne za 6.6 sekundy. Maximální rychlost je 232 km/h. Objem kufru je 835 litrů. Hmotnost vozu činí 1799 kg. Spotřeba v kombinovaném cyklu je 8.9 l/100km.`,
-  tabs: `Produkt\tKategorie\tCena\tSklad\niPhone 15\tTelefony\t24990\t150\nMacBook Air\tNotebooky\t32990\t45\nAirPods Pro\tSluchátka\t7490\t320\niPad Air\tTablety\t18990\t80`
-};
+const EXAMPLES={csv:`Jméno,Věk,Město,Profese\nJan Novák,32,Praha,Programátor\nMarie Dvořáková,28,Brno,Designérka\nPetr Svoboda,45,Ostrava,Učitel\nEva Králová,37,Plzeň,Lékařka`,list:`Nákupní seznam:\n- Mléko 1l - 25 Kč\n- Chleba žitný - 42 Kč\n- Máslo 250g - 65 Kč\n- Rajčata 1kg - 49 Kč\n- Kuřecí prsa 500g - 89 Kč`,paragraph:`Škoda Kodiaq RS má motor 2.0 TSI o výkonu 245 koní. Zrychlení z 0 na 100 km/h zvládne za 6.6 sekundy. Maximální rychlost je 232 km/h. Objem kufru je 835 litrů. Hmotnost vozu činí 1799 kg. Spotřeba v kombinovaném cyklu je 8.9 l/100km.`,tabs:`Produkt\tKategorie\tCena\tSklad\niPhone 15\tTelefony\t24990\t150\nMacBook Air\tNotebooky\t32990\t45\nAirPods Pro\tSluchátka\t7490\t320\niPad Air\tTablety\t18990\t80`};
+let currentResult=null,sortCol=null,sortDir='asc',editMode=false,selectedRows=new Set(),searchText='',filterCol=-1,columnTypes=[],undoStack=[],redoStack=[];
+const MAX_UNDO=50,inputEl=document.getElementById('input');
 
-let currentResult = null;
-let sortCol = null;
-let sortDir = 'asc';
-let editMode = false;
-let selectedRows = new Set();
+// Theme
+function toggleTheme(){const h=document.documentElement,n=h.dataset.theme==='dark'?'light':'dark';h.dataset.theme=n;document.getElementById('themeBtn').textContent=n==='dark'?'🌙':'☀️';try{localStorage.setItem('t2t_theme',n)}catch(e){}}
+(function(){try{const t=localStorage.getItem('t2t_theme');if(t){document.documentElement.dataset.theme=t;document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}}catch(e){}})();
 
-const inputEl = document.getElementById('input');
-
-// Input listeners
-inputEl.addEventListener('input', () => {
-  const v = inputEl.value.trim();
-  document.getElementById('convertBtn').disabled = !v;
-  document.getElementById('clearBtn').style.display = v ? '' : 'none';
-  if (v) {
-    const lines = v.split('\n').length;
-    document.getElementById('charCount').textContent = `${lines} řádků · ${inputEl.value.length} znaků`;
-  } else {
-    document.getElementById('charCount').textContent = '';
-  }
-});
-inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); convert(); } });
+// Input
+inputEl.addEventListener('input',()=>{const v=inputEl.value.trim();document.getElementById('convertBtn').disabled=!v;document.getElementById('clearBtn').style.display=v?'':'none';document.getElementById('charCount').textContent=v?`${v.split('\n').length} řádků · ${inputEl.value.length} znaků`:''});
+inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();convert()}});
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey){if(e.key==='z'&&!e.shiftKey){e.preventDefault();undo()}if(e.key==='y'||(e.key==='z'&&e.shiftKey)){e.preventDefault();redo()}}});
 
 // Tabs
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (tab === 'text' && i === 0) || (tab === 'file' && i === 1)));
-  document.getElementById('tabText').style.display = tab === 'text' ? '' : 'none';
-  document.getElementById('tabFile').style.display = tab === 'file' ? '' : 'none';
-}
+function switchTab(tab){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(tab==='text'&&i===0)||(tab==='file'&&i===1)||(tab==='saved'&&i===2)));document.getElementById('tabText').style.display=tab==='text'?'':'none';document.getElementById('tabFile').style.display=tab==='file'?'':'none';document.getElementById('tabSaved').style.display=tab==='saved'?'':'none';if(tab==='saved')renderSavedList()}
 
-// Drag & drop
-const dz = document.getElementById('dropzone');
-['dragenter', 'dragover'].forEach(e => dz.addEventListener(e, (ev) => { ev.preventDefault(); dz.classList.add('dragover'); }));
-['dragleave', 'drop'].forEach(e => dz.addEventListener(e, () => dz.classList.remove('dragover')));
-dz.addEventListener('drop', (ev) => {
-  ev.preventDefault();
-  const file = ev.dataTransfer.files[0];
-  if (file) readFile(file);
-});
+// Drag&drop
+const dz=document.getElementById('dropzone');
+['dragenter','dragover'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('dragover')}));
+['dragleave','drop'].forEach(e=>dz.addEventListener(e,()=>dz.classList.remove('dragover')));
+dz.addEventListener('drop',ev=>{ev.preventDefault();if(ev.dataTransfer.files[0])readFile(ev.dataTransfer.files[0])});
+function handleFile(ev){if(ev.target.files[0])readFile(ev.target.files[0])}
+function readFile(file){const ext=file.name.split('.').pop().toLowerCase();if(ext==='xlsx'||ext==='xls'){const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});if(data.length<1){toast('Prázdný Excel soubor','info');return}currentResult={headers:data[0].map(String),rows:data.slice(1).map(r=>r.map(String)),method:'Excel (.'+ext+')'};sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();searchText='';filterCol=-1;document.getElementById('searchInput').value='';undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();updateUndoButtons();switchTab('text');inputEl.value='[Načteno z Excel: '+file.name+']';inputEl.dispatchEvent(new Event('input'));toast(`Načten Excel: ${file.name} (${data.length-1} řádků)`,'success')}catch(err){toast('Chyba při čtení Excel souboru','info');console.error(err)}};r.readAsArrayBuffer(file)}else{const r=new FileReader();r.onload=e=>{switchTab('text');inputEl.value=e.target.result;inputEl.dispatchEvent(new Event('input'));toast(`Načten: ${file.name}`,'info');convert()};r.readAsText(file,'UTF-8')}}
+function loadExample(k){inputEl.value=EXAMPLES[k];inputEl.dispatchEvent(new Event('input'));document.getElementById('resultArea').classList.remove('visible')}
+function clearAll(){inputEl.value='';inputEl.dispatchEvent(new Event('input'));document.getElementById('resultArea').classList.remove('visible');currentResult=null}
 
-function handleFile(ev) { const file = ev.target.files[0]; if (file) readFile(file); }
-function readFile(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const text = e.target.result;
-    switchTab('text');
-    inputEl.value = text;
-    inputEl.dispatchEvent(new Event('input'));
-    toast(`Načten soubor: ${file.name}`, 'info');
-    convert();
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-
-function loadExample(key) { inputEl.value = EXAMPLES[key]; inputEl.dispatchEvent(new Event('input')); document.getElementById('resultArea').classList.remove('visible'); }
-function clearAll() { inputEl.value = ''; inputEl.dispatchEvent(new Event('input')); document.getElementById('resultArea').classList.remove('visible'); currentResult = null; }
+// Type detection
+function detectType(v){if(!v||!v.trim())return'text';v=v.trim();if(/^[\d\s,.]+\s*(Kč|€|\$|£|USD|EUR|CZK)$/i.test(v)||/^(Kč|€|\$|£)\s*[\d\s,.]+$/i.test(v))return'currency';if(/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}$/.test(v)||/^\d{4}-\d{2}-\d{2}/.test(v)||/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(v))return'date';const c=v.replace(/\s/g,'').replace(',','.');if(/^-?[\d.]+(%|koní|km\/h|l|kg|Kč|kW|Nm|litrů|l\/100km|mm|cm|m|sekund[ay]?|minut|hodin)?$/i.test(c))return'number';if(!isNaN(parseFloat(c))&&isFinite(c))return'number';return'text'}
+function detectColumnTypes(){if(!currentResult)return;columnTypes=currentResult.headers.map((_,ci)=>{const types=currentResult.rows.map(r=>detectType(r[ci])).filter(t=>t!=='text');if(!types.length)return'text';const counts={};types.forEach(t=>counts[t]=(counts[t]||0)+1);const d=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];return d&&d[1]>=currentResult.rows.length*0.5?d[0]:'text'})}
+function typeTag(type){const l={number:'číslo',date:'datum',currency:'měna',text:'text'},c={number:'type-num',date:'type-date',currency:'type-curr',text:'type-text'};return`<span class="type-tag ${c[type]}">${l[type]}</span>`}
 
 // Parser
-function parseTextToTable(text) {
-  const lines = text.trim().split('\n').filter(l => l.trim());
-  if (!lines.length) return { headers: [], rows: [] };
-  if (lines[0].includes(',') && lines.every(l => l.split(',').length === lines[0].split(',').length)) {
-    return { headers: lines[0].split(',').map(h => h.trim()), rows: lines.slice(1).map(l => l.split(',').map(c => c.trim())), method: 'CSV (čárka)' };
-  }
-  if (lines[0].includes('\t') && lines.every(l => l.split('\t').length === lines[0].split('\t').length)) {
-    return { headers: lines[0].split('\t').map(h => h.trim()), rows: lines.slice(1).map(l => l.split('\t').map(c => c.trim())), method: 'TSV (tabulátor)' };
-  }
-  if (lines[0].includes(';') && lines.every(l => l.split(';').length === lines[0].split(';').length && l.split(';').length > 1)) {
-    return { headers: lines[0].split(';').map(h => h.trim()), rows: lines.slice(1).map(l => l.split(';').map(c => c.trim())), method: 'Středník' };
-  }
-  if (lines[0].includes('|') && lines.every(l => l.split('|').length === lines[0].split('|').length && l.split('|').length > 1)) {
-    const all = lines.map(l => l.split('|').map(c => c.trim()).filter(c => c !== ''));
-    const filtered = all.filter(r => !r.every(c => /^[-:]+$/.test(c)));
-    if (filtered.length > 1) return { headers: filtered[0], rows: filtered.slice(1), method: 'Pipe (|)' };
-  }
-  const listLines = lines.filter(l => /^\s*[-•*]\s+/.test(l));
-  if (listLines.length >= 2) {
-    const titleLine = lines.find(l => !/^\s*[-•*]\s+/.test(l));
-    const items = listLines.map(l => l.replace(/^\s*[-•*]\s+/, '').trim());
-    if (items.every(i => i.includes(' - '))) {
-      const parts = items.map(i => i.split(' - ').map(p => p.trim()));
-      const mx = Math.max(...parts.map(p => p.length));
-      const cn = mx === 2 ? ['Položka','Hodnota'] : mx === 3 ? ['Položka','Detail','Hodnota'] : Array.from({length:mx},(_,i)=>`Sloupec ${i+1}`);
-      const rows = parts.map(p => { while(p.length<mx) p.push(''); return p; });
-      return { headers: cn, rows, method: 'Seznam (pomlčka)', title: titleLine?.replace(/:$/,'').trim() };
-    }
-    return { headers: ['#','Položka'], rows: items.map((item,i) => [String(i+1), item]), method: 'Seznam', title: titleLine?.replace(/:$/,'').trim() };
-  }
-  const kvP = /(.+?)\s+(?:je|má|činí|dosahuje|zvládne|nabízí|disponuje|obsahuje|váží)\s+(.+?)\.?\s*$/i;
-  const kvPairs = lines.join(' ').split(/\.\s*/).filter(s=>s.trim()).map(s => { const m=s.trim().match(kvP); return m?[m[1].trim(),m[2].trim()]:null; }).filter(Boolean);
-  if (kvPairs.length >= 2) return { headers: ['Vlastnost','Hodnota'], rows: kvPairs, method: 'Věty (klíč-hodnota)' };
-  const sents = lines.join(' ').split(/\.\s*/).filter(s=>s.trim());
-  const numS = sents.filter(s => /\d/.test(s));
-  if (numS.length >= 2) {
-    const rows = numS.map(s => {
-      const nm = s.match(/([\d\s,.]+\s*(?:koní|km\/h|l|kg|Kč|%|mm|cm|m|kW|Nm|sekund[ay]?|minut|hodin|litrů|l\/100km)?)\s*$/i) || s.match(/([\d,.]+)/);
-      if (nm) { return [s.replace(nm[0],'').trim(), nm[1].trim()]; }
-      return [s.trim(), ''];
-    });
-    return { headers: ['Popis','Hodnota'], rows, method: 'Extrakce čísel' };
-  }
-  return { headers: ['#','Řádek'], rows: lines.map((l,i) => [String(i+1), l.trim()]), method: 'Řádky textu' };
-}
+function parseTextToTable(text){const lines=text.trim().split('\n').filter(l=>l.trim());if(!lines.length)return{headers:[],rows:[]};if(lines[0].includes(',')&&lines.every(l=>l.split(',').length===lines[0].split(',').length))return{headers:lines[0].split(',').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split(',').map(c=>c.trim())),method:'CSV (čárka)'};if(lines[0].includes('\t')&&lines.every(l=>l.split('\t').length===lines[0].split('\t').length))return{headers:lines[0].split('\t').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split('\t').map(c=>c.trim())),method:'TSV (tabulátor)'};if(lines[0].includes(';')&&lines.every(l=>l.split(';').length===lines[0].split(';').length&&l.split(';').length>1))return{headers:lines[0].split(';').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split(';').map(c=>c.trim())),method:'Středník'};if(lines[0].includes('|')&&lines.every(l=>l.split('|').length===lines[0].split('|').length&&l.split('|').length>1)){const all=lines.map(l=>l.split('|').map(c=>c.trim()).filter(c=>c!==''));const f=all.filter(r=>!r.every(c=>/^[-:]+$/.test(c)));if(f.length>1)return{headers:f[0],rows:f.slice(1),method:'Pipe (|)'}}const ll=lines.filter(l=>/^\s*[-•*]\s+/.test(l));if(ll.length>=2){const tl=lines.find(l=>!/^\s*[-•*]\s+/.test(l));const items=ll.map(l=>l.replace(/^\s*[-•*]\s+/,'').trim());if(items.every(i=>i.includes(' - '))){const parts=items.map(i=>i.split(' - ').map(p=>p.trim()));const mx=Math.max(...parts.map(p=>p.length));const cn=mx===2?['Položka','Hodnota']:mx===3?['Položka','Detail','Hodnota']:Array.from({length:mx},(_,i)=>`Sloupec ${i+1}`);const rows=parts.map(p=>{while(p.length<mx)p.push('');return p});return{headers:cn,rows,method:'Seznam (pomlčka)',title:tl?.replace(/:$/,'').trim()}}return{headers:['#','Položka'],rows:items.map((it,i)=>[String(i+1),it]),method:'Seznam',title:tl?.replace(/:$/,'').trim()}}const kvP=/(.+?)\s+(?:je|má|činí|dosahuje|zvládne|nabízí|disponuje|obsahuje|váží)\s+(.+?)\.?\s*$/i;const kvPairs=lines.join(' ').split(/\.\s*/).filter(s=>s.trim()).map(s=>{const m=s.trim().match(kvP);return m?[m[1].trim(),m[2].trim()]:null}).filter(Boolean);if(kvPairs.length>=2)return{headers:['Vlastnost','Hodnota'],rows:kvPairs,method:'Věty (klíč-hodnota)'};const sents=lines.join(' ').split(/\.\s*/).filter(s=>s.trim());const numS=sents.filter(s=>/\d/.test(s));if(numS.length>=2){const rows=numS.map(s=>{const nm=s.match(/([\d\s,.]+\s*(?:koní|km\/h|l|kg|Kč|%|mm|cm|m|kW|Nm|sekund[ay]?|minut|hodin|litrů|l\/100km)?)\s*$/i)||s.match(/([\d,.]+)/);if(nm)return[s.replace(nm[0],'').trim(),nm[1].trim()];return[s.trim(),'']});return{headers:['Popis','Hodnota'],rows,method:'Extrakce čísel'}}return{headers:['#','Řádek'],rows:lines.map((l,i)=>[String(i+1),l.trim()]),method:'Řádky textu'}}
 
-function convert() {
-  const text = inputEl.value;
-  if (!text.trim()) return;
-  currentResult = parseTextToTable(text);
-  sortCol = null; sortDir = 'asc'; editMode = false; selectedRows.clear();
-  document.getElementById('editToggle').textContent = '✎ Režim úprav';
-  renderResult();
-}
+// Undo/Redo
+function pushUndo(){undoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));if(undoStack.length>MAX_UNDO)undoStack.shift();redoStack=[];updateUndoButtons()}
+function undo(){if(!undoStack.length||!currentResult)return;redoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));const s=JSON.parse(undoStack.pop());currentResult.headers=s.headers;currentResult.rows=s.rows;currentResult.title=s.title;detectColumnTypes();renderResult();toast('↩ Zpět','info')}
+function redo(){if(!redoStack.length||!currentResult)return;undoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));const s=JSON.parse(redoStack.pop());currentResult.headers=s.headers;currentResult.rows=s.rows;currentResult.title=s.title;detectColumnTypes();renderResult();toast('↪ Vpřed','info')}
+function updateUndoButtons(){document.getElementById('undoBtn').disabled=!undoStack.length;document.getElementById('redoBtn').disabled=!redoStack.length}
 
-function renderResult() {
-  if (!currentResult) return;
-  document.getElementById('rowCount').textContent = currentResult.rows.length;
-  document.getElementById('colCount').textContent = currentResult.headers.length;
-  document.getElementById('methodBadge').textContent = '⚙ ' + (currentResult.method || '—');
-  const titleEl = document.getElementById('tableTitle');
-  if (currentResult.title) { titleEl.textContent = currentResult.title; titleEl.style.display = ''; } else { titleEl.style.display = 'none'; }
-  const rows = getSortedRows();
-  const thead = document.getElementById('tableHead');
-  let headHtml = '<tr>';
-  if (editMode) headHtml += '<th style="width:40px;text-align:center">#</th>';
-  currentResult.headers.forEach((h, i) => {
-    if (editMode) {
-      headHtml += `<th><input class="header-edit" value="${esc(h)}" onchange="renameHeader(${i}, this.value)"></th>`;
-    } else {
-      headHtml += `<th onclick="handleSort(${i})">${esc(h)}${sortCol===i?`<span class="sort-arrow">${sortDir==='asc'?'▲':'▼'}</span>`:''}</th>`;
-    }
-  });
-  if (editMode) headHtml += '<th style="width:60px"></th>';
-  headHtml += '</tr>';
-  thead.innerHTML = headHtml;
+// Save/Load
+function getSaved(){try{return JSON.parse(localStorage.getItem('t2t_saved')||'[]')}catch(e){return[]}}
+function setSaved(a){try{localStorage.setItem('t2t_saved',JSON.stringify(a))}catch(e){}}
+function saveTable(){if(!currentResult)return;const name=prompt('Název tabulky:',currentResult.title||'Tabulka '+new Date().toLocaleDateString('cs'));if(!name)return;const s=getSaved();s.unshift({name,headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title,method:currentResult.method,date:new Date().toISOString()});if(s.length>20)s.pop();setSaved(s);toast(`Uloženo: ${name}`,'success')}
+function loadSaved(i){const s=getSaved(),item=s[i];if(!item)return;currentResult={headers:item.headers,rows:item.rows,title:item.title,method:item.method};sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();switchTab('text');toast(`Načteno: ${item.name}`,'info')}
+function deleteSaved(i){const s=getSaved();s.splice(i,1);setSaved(s);renderSavedList()}
+function clearSaved(){if(!confirm('Opravdu smazat všechny uložené tabulky?'))return;setSaved([]);renderSavedList();toast('Uložené tabulky smazány','info')}
+function renderSavedList(){const s=getSaved(),list=document.getElementById('savedList'),empty=document.getElementById('savedEmpty');if(!s.length){list.innerHTML='';empty.style.display='';return}empty.style.display='none';list.innerHTML=s.map((x,i)=>`<div class="saved-item"><div onclick="loadSaved(${i})" style="flex:1"><div class="saved-name">${esc(x.name)}</div><div class="saved-meta">${x.rows?.length||0} řádků · ${x.headers?.length||0} sloupců · ${new Date(x.date).toLocaleDateString('cs')}</div></div><button class="btn-sm danger" onclick="event.stopPropagation();deleteSaved(${i})">✕</button></div>`).join('')}
 
-  const tbody = document.getElementById('tableBody');
-  let bodyHtml = '';
-  rows.forEach((row, ri) => {
-    const origIdx = currentResult.rows.indexOf(row);
-    const sel = selectedRows.has(origIdx);
-    bodyHtml += `<tr class="${sel ? 'selected' : ''}">`;
-    if (editMode) bodyHtml += `<td style="text-align:center"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect(${origIdx}, this.checked)"></td>`;
-    row.forEach((cell, ci) => {
-      bodyHtml += `<td ondblclick="startEdit(this, ${origIdx}, ${ci})">${esc(cell)}</td>`;
-    });
-    if (editMode) bodyHtml += `<td><div class="row-actions" style="opacity:1"><button class="btn-sm danger" onclick="deleteRow(${origIdx})">✕</button></div></td>`;
-    bodyHtml += '</tr>';
-  });
-  tbody.innerHTML = bodyHtml;
-  document.getElementById('resultArea').classList.add('visible');
-}
+// Convert
+function convert(){const t=inputEl.value;if(!t.trim())return;currentResult=parseTextToTable(t);sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();searchText='';filterCol=-1;document.getElementById('searchInput').value='';document.getElementById('editToggle').textContent='✎ Režim úprav';undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();updateUndoButtons()}
+function buildFilterSelect(){const sel=document.getElementById('filterCol');sel.innerHTML='<option value="-1">Všechny sloupce</option>';if(currentResult)currentResult.headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h;sel.appendChild(o)})}
 
-function getSortedRows() {
-  if (!currentResult) return [];
-  const rows = [...currentResult.rows];
-  if (sortCol === null) return rows;
-  return rows.sort((a, b) => {
-    const va = a[sortCol]||'', vb = b[sortCol]||'';
-    const na = parseFloat(va.replace(/\s/g,'').replace(',','.'));
-    const nb = parseFloat(vb.replace(/\s/g,'').replace(',','.'));
-    if (!isNaN(na) && !isNaN(nb)) return sortDir==='asc'?na-nb:nb-na;
-    return sortDir==='asc'?va.localeCompare(vb,'cs'):vb.localeCompare(va,'cs');
-  });
-}
+// Filter
+function applyFilter(){searchText=document.getElementById('searchInput').value.toLowerCase().trim();filterCol=parseInt(document.getElementById('filterCol').value);renderResult()}
+function getFilteredRows(){if(!currentResult)return[];let rows=getSortedRows();if(!searchText)return rows;return rows.filter(row=>filterCol>=0?(row[filterCol]||'').toLowerCase().includes(searchText):row.some(c=>(c||'').toLowerCase().includes(searchText)))}
+function highlightText(text,search){if(!search||!text)return esc(text);const e=esc(text),s=search.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return e.replace(new RegExp(`(${s})`,'gi'),'<mark>$1</mark>')}
 
-function handleSort(idx) {
-  if (sortCol === idx) sortDir = sortDir==='asc'?'desc':'asc'; else { sortCol = idx; sortDir = 'asc'; }
-  renderResult();
-}
-
-function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+// Render
+function renderResult(){if(!currentResult)return;const fr=getFilteredRows();document.getElementById('rowCount').textContent=currentResult.rows.length;document.getElementById('colCount').textContent=currentResult.headers.length;document.getElementById('methodBadge').textContent='⚙ '+(currentResult.method||'—');document.getElementById('filterCount').textContent=searchText?`${fr.length} z ${currentResult.rows.length} řádků`:'';const tEl=document.getElementById('tableTitle');if(currentResult.title){tEl.textContent=currentResult.title;tEl.style.display=''}else tEl.style.display='none';const thead=document.getElementById('tableHead');let hh='<tr>';if(editMode)hh+='<th style="width:40px;text-align:center">#</th>';currentResult.headers.forEach((h,i)=>{const tt=columnTypes[i]?typeTag(columnTypes[i]):'';if(editMode)hh+=`<th><input class="header-edit" value="${esc(h)}" onchange="renameHeader(${i},this.value)">${tt}</th>`;else hh+=`<th onclick="handleSort(${i})">${esc(h)}${tt}${sortCol===i?`<span class="sort-arrow">${sortDir==='asc'?'▲':'▼'}</span>`:''}</th>`});if(editMode)hh+='<th style="width:50px"></th>';hh+='</tr>';thead.innerHTML=hh;const tbody=document.getElementById('tableBody');let bb='';fr.forEach(row=>{const oi=currentResult.rows.indexOf(row),sel=selectedRows.has(oi);bb+=`<tr class="${sel?'selected':''}">`;if(editMode)bb+=`<td style="text-align:center"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect(${oi},this.checked)"></td>`;row.forEach((cell,ci)=>{const ct=columnTypes[ci]||'text',cls=ct==='number'?'num-cell':ct==='currency'?'curr-cell':ct==='date'?'date-cell':'';bb+=`<td class="${cls}" ondblclick="startEdit(this,${oi},${ci})">${searchText?highlightText(cell,searchText):esc(cell)}</td>`});if(editMode)bb+=`<td><button class="btn-sm danger" onclick="deleteRow(${oi})">✕</button></td>`;bb+='</tr>'});tbody.innerHTML=bb;document.getElementById('resultArea').classList.add('visible');updateUndoButtons()}
+function getSortedRows(){if(!currentResult)return[];const rows=[...currentResult.rows];if(sortCol===null)return rows;return rows.sort((a,b)=>{const va=a[sortCol]||'',vb=b[sortCol]||'';const na=parseFloat(va.replace(/\s/g,'').replace(',','.')),nb=parseFloat(vb.replace(/\s/g,'').replace(',','.'));if(!isNaN(na)&&!isNaN(nb))return sortDir==='asc'?na-nb:nb-na;return sortDir==='asc'?va.localeCompare(vb,'cs'):vb.localeCompare(va,'cs')})}
+function handleSort(i){if(sortCol===i)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=i;sortDir='asc'}renderResult()}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 // Editing
-function startEdit(td, rowIdx, colIdx) {
-  if (td.classList.contains('editing')) return;
-  const val = currentResult.rows[rowIdx][colIdx];
-  td.classList.add('editing');
-  td.innerHTML = `<input value="${esc(val)}" onblur="finishEdit(this, ${rowIdx}, ${colIdx})" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){this.dataset.cancel='1';this.blur();}">`;
-  td.querySelector('input').focus();
-  td.querySelector('input').select();
-}
-
-function finishEdit(inp, rowIdx, colIdx) {
-  if (inp.dataset.cancel !== '1') {
-    currentResult.rows[rowIdx][colIdx] = inp.value;
-  }
-  renderResult();
-}
-
-function renameHeader(idx, val) { currentResult.headers[idx] = val; }
-
-function toggleEditMode() {
-  editMode = !editMode;
-  document.getElementById('editToggle').textContent = editMode ? '✓ Hotovo' : '✎ Režim úprav';
-  document.getElementById('tableHint').textContent = editMode ? 'Edituj záhlaví · Zaškrtni řádky ke smazání · Dvojklik na buňku' : 'Klikni na záhlaví pro řazení · Dvojklik na buňku pro editaci';
-  renderResult();
-}
-
-function toggleSelect(idx, checked) {
-  if (checked) selectedRows.add(idx); else selectedRows.delete(idx);
-  renderResult();
-}
-
-function addRow() {
-  if (!currentResult) return;
-  currentResult.rows.push(currentResult.headers.map(() => ''));
-  renderResult();
-  toast('Přidán nový řádek', 'success');
-}
-
-function addColumn() {
-  if (!currentResult) return;
-  const name = prompt('Název nového sloupce:', `Sloupec ${currentResult.headers.length + 1}`);
-  if (name === null) return;
-  currentResult.headers.push(name);
-  currentResult.rows.forEach(r => r.push(''));
-  renderResult();
-  toast(`Přidán sloupec "${name}"`, 'success');
-}
-
-function deleteSelected() {
-  if (!currentResult || selectedRows.size === 0) { toast('Nejprve zaškrtni řádky ke smazání', 'info'); return; }
-  const indices = [...selectedRows].sort((a,b) => b-a);
-  indices.forEach(i => currentResult.rows.splice(i, 1));
-  selectedRows.clear();
-  renderResult();
-  toast(`Smazáno ${indices.length} řádků`, 'success');
-}
-
-function deleteRow(idx) {
-  currentResult.rows.splice(idx, 1);
-  selectedRows.delete(idx);
-  renderResult();
-}
+function startEdit(td,ri,ci){if(td.classList.contains('editing'))return;pushUndo();const v=currentResult.rows[ri][ci];td.classList.add('editing');td.innerHTML=`<input value="${esc(v)}" onblur="finishEdit(this,${ri},${ci})" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){this.dataset.cancel='1';this.blur();}">`;td.querySelector('input').focus();td.querySelector('input').select()}
+function finishEdit(inp,ri,ci){if(inp.dataset.cancel!=='1'){currentResult.rows[ri][ci]=inp.value;detectColumnTypes()}renderResult()}
+function renameHeader(i,v){pushUndo();currentResult.headers[i]=v;buildFilterSelect()}
+function toggleEditMode(){editMode=!editMode;document.getElementById('editToggle').textContent=editMode?'✓ Hotovo':'✎ Režim úprav';renderResult()}
+function toggleSelect(i,c){if(c)selectedRows.add(i);else selectedRows.delete(i);renderResult()}
+function addRow(){if(!currentResult)return;pushUndo();currentResult.rows.push(currentResult.headers.map(()=>''));renderResult();toast('Přidán nový řádek','success')}
+function addColumn(){if(!currentResult)return;const n=prompt('Název nového sloupce:',`Sloupec ${currentResult.headers.length+1}`);if(!n)return;pushUndo();currentResult.headers.push(n);currentResult.rows.forEach(r=>r.push(''));columnTypes.push('text');buildFilterSelect();renderResult();toast(`Přidán sloupec "${n}"`,'success')}
+function deleteSelected(){if(!currentResult||!selectedRows.size){toast('Zaškrtni řádky ke smazání','info');return}pushUndo();[...selectedRows].sort((a,b)=>b-a).forEach(i=>currentResult.rows.splice(i,1));selectedRows.clear();detectColumnTypes();renderResult();toast('Řádky smazány','success')}
+function deleteRow(i){pushUndo();currentResult.rows.splice(i,1);selectedRows.delete(i);detectColumnTypes();renderResult()}
 
 // Toast
-function toast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
+function toast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),2500)}
 
-// Copy
-function copyTable() {
-  if (!currentResult) return;
-  const rows = getSortedRows();
-  const text = [currentResult.headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
-  navigator.clipboard.writeText(text).then(() => toast('Zkopírováno do schránky'));
-}
-
-// CSV export
-function exportCSV() {
-  if (!currentResult) return;
-  const rows = getSortedRows();
-  const esc = v => '"' + String(v).replace(/"/g,'""') + '"';
-  const csv = [currentResult.headers.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))].join('\n');
-  download('\uFEFF' + csv, 'tabulka.csv', 'text/csv;charset=utf-8');
-  toast('CSV exportováno');
-}
-
-// Excel export
-function exportExcel() {
-  if (!currentResult) return;
-  const rows = getSortedRows();
-  const data = [currentResult.headers, ...rows];
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  // Style header width
-  const colWidths = currentResult.headers.map((h, i) => {
-    const maxLen = Math.max(h.length, ...rows.map(r => (r[i]||'').length));
-    return { wch: Math.min(maxLen + 4, 40) };
-  });
-  ws['!cols'] = colWidths;
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Data');
-  XLSX.writeFile(wb, 'tabulka.xlsx');
-  toast('Excel exportován');
-}
-
-// PDF export
-function exportPDF() {
-  if (!currentResult) return;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: currentResult.headers.length > 5 ? 'l' : 'p' });
-  const title = currentResult.title || 'Tabulka';
-  doc.setFontSize(16);
-  doc.text(title, 14, 20);
-  doc.autoTable({
-    head: [currentResult.headers],
-    body: getSortedRows(),
-    startY: 30,
-    styles: { fontSize: 9, cellPadding: 4 },
-    headStyles: { fillColor: [245, 158, 11], textColor: [10, 10, 15], fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [245, 245, 240] },
-  });
-  doc.save('tabulka.pdf');
-  toast('PDF exportováno');
-}
-
-// Markdown export
-function exportMarkdown() {
-  if (!currentResult) return;
-  const rows = getSortedRows();
-  const hdr = '| ' + currentResult.headers.join(' | ') + ' |';
-  const sep = '| ' + currentResult.headers.map(() => '---').join(' | ') + ' |';
-  const body = rows.map(r => '| ' + r.join(' | ') + ' |').join('\n');
-  const md = (currentResult.title ? `## ${currentResult.title}\n\n` : '') + hdr + '\n' + sep + '\n' + body;
-  download(md, 'tabulka.md', 'text/markdown;charset=utf-8');
-  toast('Markdown exportován');
-}
-
-// JSON export
-function exportJSON() {
-  if (!currentResult) return;
-  const rows = getSortedRows();
-  const data = rows.map(r => {
-    const obj = {};
-    currentResult.headers.forEach((h, i) => obj[h] = r[i] || '');
-    return obj;
-  });
-  const json = JSON.stringify(data, null, 2);
-  download(json, 'tabulka.json', 'application/json;charset=utf-8');
-  toast('JSON exportován');
-}
-
-function download(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
+// Copy & Exports
+function copyTable(){if(!currentResult)return;const rows=getFilteredRows(),text=[currentResult.headers.join('\t'),...rows.map(r=>r.join('\t'))].join('\n');navigator.clipboard.writeText(text).then(()=>toast('Zkopírováno do schránky'))}
+function exportCSV(){if(!currentResult)return;const rows=getFilteredRows(),e=v=>'"'+String(v).replace(/"/g,'""')+'"';dl('\uFEFF'+[currentResult.headers.map(e).join(','),...rows.map(r=>r.map(e).join(','))].join('\n'),'tabulka.csv','text/csv;charset=utf-8');toast('CSV exportováno')}
+function exportExcel(){if(!currentResult)return;const rows=getFilteredRows(),data=[currentResult.headers,...rows],ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=currentResult.headers.map((h,i)=>({wch:Math.min(Math.max(h.length,...rows.map(r=>(r[i]||'').length))+4,40)}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data');XLSX.writeFile(wb,'tabulka.xlsx');toast('Excel exportován')}
+function exportPDF(){if(!currentResult)return;const{jsPDF}=window.jspdf,doc=new jsPDF({orientation:currentResult.headers.length>5?'l':'p'});doc.setFontSize(16);doc.text(currentResult.title||'Tabulka',14,20);doc.autoTable({head:[currentResult.headers],body:getFilteredRows(),startY:30,styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[245,158,11],textColor:[10,10,15],fontStyle:'bold'},alternateRowStyles:{fillColor:[245,245,240]}});doc.save('tabulka.pdf');toast('PDF exportováno')}
+function exportMarkdown(){if(!currentResult)return;const rows=getFilteredRows(),md=(currentResult.title?`## ${currentResult.title}\n\n`:'')+'| '+currentResult.headers.join(' | ')+' |\n| '+currentResult.headers.map(()=>'---').join(' | ')+' |\n'+rows.map(r=>'| '+r.join(' | ')+' |').join('\n');dl(md,'tabulka.md','text/markdown;charset=utf-8');toast('Markdown exportován')}
+function exportJSON(){if(!currentResult)return;const rows=getFilteredRows(),data=rows.map(r=>{const o={};currentResult.headers.forEach((h,i)=>o[h]=r[i]||'');return o});dl(JSON.stringify(data,null,2),'tabulka.json','application/json;charset=utf-8');toast('JSON exportován')}
+function dl(c,f,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=f;a.click();URL.revokeObjectURL(u)}
 </script>
 </body>
 </html>
