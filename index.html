@@ -11,9 +11,9 @@
 <style>
   :root { --transition-theme: background 0.35s, color 0.35s, border-color 0.35s, box-shadow 0.35s; }
   [data-theme="dark"] {
-    --bg:#0a0a0f;--bg2:#12121a;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);
+    --bg:#0a0a0f;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);
     --text:#e8e6e1;--text-dim:#6b6860;--text-mid:#a8a49c;--accent:#f59e0b;--accent-dark:#d97706;
-    --purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+    --purple:#8b5cf6;--green:#22c55e;--red:#ef4444;
     --th-bg:rgba(245,158,11,0.08);--th-border:rgba(245,158,11,0.15);
     --td-hover:rgba(255,255,255,0.02);--td-border:rgba(255,255,255,0.04);
     --input-bg:rgba(255,255,255,0.02);--input-border:rgba(255,255,255,0.08);
@@ -22,9 +22,9 @@
     --type-num:#f59e0b;--type-date:#8b5cf6;--type-curr:#22c55e;--type-text:#6b6860;
   }
   [data-theme="light"] {
-    --bg:#f5f4f0;--bg2:#eae9e4;--surface:rgba(0,0,0,0.02);--border:rgba(0,0,0,0.08);
+    --bg:#f5f4f0;--surface:rgba(0,0,0,0.02);--border:rgba(0,0,0,0.08);
     --text:#1a1a1f;--text-dim:#8a8780;--text-mid:#5a5750;--accent:#d97706;--accent-dark:#b45309;
-    --purple:#7c3aed;--green:#16a34a;--red:#dc2626;--blue:#2563eb;
+    --purple:#7c3aed;--green:#16a34a;--red:#dc2626;
     --th-bg:rgba(217,119,6,0.08);--th-border:rgba(217,119,6,0.2);
     --td-hover:rgba(0,0,0,0.02);--td-border:rgba(0,0,0,0.06);
     --input-bg:rgba(0,0,0,0.02);--input-border:rgba(0,0,0,0.12);
@@ -41,11 +41,11 @@
   .glow-line{height:2px;width:120px;margin:0 auto 16px;background:linear-gradient(90deg,transparent,var(--accent),var(--red),var(--purple),transparent);border-radius:2px}
   .header p{color:var(--text-dim);font-size:13px;max-width:520px;margin:0 auto;line-height:1.6}
   .theme-toggle{position:absolute;top:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:18px;transition:all 0.2s}
-  .theme-toggle:hover{background:var(--td-hover);border-color:var(--accent)}
+  .theme-toggle:hover{border-color:var(--accent)}
   .glass{background:linear-gradient(135deg,var(--glass-from),var(--glass-to));border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(20px);transition:var(--transition-theme)}
   .tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
-  .tab{flex:1;padding:10px 16px;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;border-radius:8px;border:none;background:transparent;font-family:inherit;transition:all 0.2s;letter-spacing:0.5px}
-  .tab:hover{color:var(--text-mid);background:var(--td-hover)}
+  .tab{flex:1;padding:10px 16px;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;border-radius:8px;border:none;background:transparent;font-family:inherit;transition:all 0.2s}
+  .tab:hover{color:var(--text-mid)}
   .tab.active{color:var(--accent);background:var(--th-bg)}
   .input-panel{padding:28px;margin-bottom:24px}
   .input-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
@@ -63,21 +63,20 @@
   .dropzone-text{font-size:14px;color:var(--text-mid);margin-bottom:8px}
   .dropzone-hint{font-size:11px;color:var(--text-dim)}
   .dropzone input[type="file"]{display:none}
-  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#0a0a0f;font-family:inherit;font-weight:600;font-size:14px;border:none;border-radius:10px;padding:12px 32px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;letter-spacing:0.5px}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#0a0a0f;font-family:inherit;font-weight:600;font-size:14px;border:none;border-radius:10px;padding:12px 32px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s}
   .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,0.25)}
-  .btn-primary:active{transform:translateY(0)}
   .btn-primary:disabled{opacity:0.4;cursor:default;transform:none;box-shadow:none}
   .btn-ghost{background:var(--surface);color:var(--text-mid);font-family:inherit;font-size:11px;font-weight:500;border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;transition:all 0.2s}
-  .btn-ghost:hover{background:var(--td-hover);color:var(--text);border-color:var(--accent)}
+  .btn-ghost:hover{color:var(--text);border-color:var(--accent)}
   .btn-icon{background:var(--surface);color:var(--text-mid);border:1px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
-  .btn-icon:hover{background:var(--td-hover);color:var(--text)}
+  .btn-icon:hover{color:var(--text)}
   .btn-icon:disabled{opacity:0.3;cursor:default}
   .btn-sm{background:var(--surface);color:var(--text-dim);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit;font-size:10px;font-weight:500;transition:all 0.2s}
-  .btn-sm:hover{background:var(--td-hover);color:var(--text)}
-  .btn-sm.danger:hover{background:rgba(239,68,68,0.15);color:var(--red);border-color:rgba(239,68,68,0.3)}
-  .btn-sm.success:hover{background:rgba(34,197,94,0.15);color:var(--green);border-color:rgba(34,197,94,0.3)}
+  .btn-sm:hover{color:var(--text)}
+  .btn-sm.danger:hover{background:rgba(239,68,68,0.15);color:var(--red)}
+  .btn-sm.success:hover{background:rgba(34,197,94,0.15);color:var(--green)}
   .search-bar{padding:12px 24px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .search-input{flex:1;min-width:200px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;padding:8px 14px 8px 34px;outline:none;transition:border-color 0.3s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b6860' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+  .search-input{flex:1;min-width:200px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;padding:8px 14px;outline:none;transition:border-color 0.3s}
   .search-input:focus{border-color:var(--accent)}
   .filter-select{background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--text);font-family:inherit;font-size:11px;padding:8px 12px;outline:none;cursor:pointer}
   .filter-count{font-size:11px;color:var(--text-dim)}
@@ -86,16 +85,15 @@
   .stat-num{color:var(--accent);font-weight:700;font-size:20px}
   .stat-label{color:var(--text-dim);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
   .badge{display:inline-flex;align-items:center;gap:6px;background:var(--badge-bg);border:1px solid var(--badge-border);color:#a78bfa;font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px}
-  .undo-bar{display:flex;gap:4px;align-items:center}
   .toolbar-row{padding:10px 24px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .toolbar-label{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-right:8px}
   .toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 6px}
-  .type-tag{font-size:9px;font-weight:600;letter-spacing:0.5px;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+  .type-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
   .type-num{background:rgba(245,158,11,0.12);color:var(--type-num)}
   .type-date{background:rgba(139,92,246,0.12);color:var(--type-date)}
   .type-curr{background:rgba(34,197,94,0.12);color:var(--type-curr)}
   .type-text{background:rgba(107,104,96,0.12);color:var(--type-text)}
-  .saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer}
+  .saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
   .saved-item:hover{background:var(--td-hover)}
   .saved-item:last-child{border-bottom:none}
   .saved-name{font-size:13px;font-weight:500;color:var(--text)}
@@ -104,15 +102,15 @@
   .table-panel{padding:4px}
   .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
   table{width:100%;border-collapse:separate;border-spacing:0}
-  th{background:var(--th-bg);color:var(--accent);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;padding:12px 16px;text-align:left;cursor:pointer;user-select:none;border-bottom:1px solid var(--th-border);transition:background 0.2s;white-space:nowrap}
+  th{background:var(--th-bg);color:var(--accent);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;padding:12px 16px;text-align:left;cursor:pointer;user-select:none;border-bottom:1px solid var(--th-border);white-space:nowrap;transition:background 0.2s}
   th:hover{background:rgba(245,158,11,0.14)}
   th:first-child{border-radius:12px 0 0 0}
   th:last-child{border-radius:0 12px 0 0}
   th input.header-edit{background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--accent);font-family:inherit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;outline:none;width:100%;padding:0}
-  td{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--td-border);color:var(--cell-text);transition:background 0.15s;position:relative}
+  td{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--td-border);color:var(--cell-text);transition:background 0.15s}
   td.editing{padding:4px}
   td.editing input{width:100%;background:var(--input-bg);border:1px solid rgba(245,158,11,0.3);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;padding:6px 12px;outline:none}
-  td.editing input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(245,158,11,0.1)}
+  td.editing input:focus{border-color:var(--accent)}
   td.num-cell{font-variant-numeric:tabular-nums;text-align:right}
   td.curr-cell{font-variant-numeric:tabular-nums;text-align:right;color:var(--green)}
   td.date-cell{color:var(--purple)}
@@ -123,16 +121,17 @@
   tr:last-child td:last-child{border-radius:0 0 12px 0}
   tr.selected td{background:rgba(245,158,11,0.06)}
   .sort-arrow{font-size:10px;opacity:0.7;margin-left:4px}
+  .sort-type{font-size:8px;opacity:0.5;margin-left:2px}
   .hint{text-align:center;margin-top:20px;font-size:11px;color:var(--text-dim)}
   .result-area{display:none}
   .result-area.visible{display:block;animation:fadeInUp 0.4s ease-out}
   @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:500;z-index:1000;animation:toastIn 0.3s ease-out;display:none;border:1px solid;font-family:'JetBrains Mono',monospace}
+  .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:500;z-index:1000;display:none;border:1px solid;font-family:'JetBrains Mono',monospace;animation:toastIn 0.3s ease-out}
   .toast.success{background:rgba(34,197,94,0.12);color:var(--green);border-color:rgba(34,197,94,0.25)}
   .toast.info{background:rgba(139,92,246,0.12);color:#a78bfa;border-color:rgba(139,92,246,0.25)}
   .toast.show{display:block}
   @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-  @media(max-width:640px){.container{padding:24px 16px}.stats-left{gap:16px}th,td{padding:8px 10px;font-size:11px}.toolbar-row{padding:8px 16px}}
+  @media(max-width:640px){.container{padding:24px 16px}th,td{padding:8px 10px;font-size:11px}.toolbar-row{padding:8px 16px}}
 </style>
 </head>
 <body>
@@ -141,7 +140,7 @@
     <div class="header-tag">Nástroj v3</div>
     <h1>Text → Tabulka</h1>
     <div class="glow-line"></div>
-    <p>Vlož text, nahraj soubor — uprav, filtruj, vizualizuj a exportuj kam potřebuješ.</p>
+    <p>Vlož text, nahraj soubor — uprav, filtruj a exportuj kam potřebuješ.</p>
     <button class="theme-toggle" onclick="toggleTheme()" title="Přepnout téma" id="themeBtn">🌙</button>
   </div>
   <div class="tabs">
@@ -174,7 +173,7 @@
     <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
       <div class="dropzone-icon">📄</div>
       <div class="dropzone-text">Přetáhni sem soubor nebo klikni pro výběr</div>
-      <div class="dropzone-hint">Podporované formáty: TXT, CSV, TSV, JSON, Excel (.xlsx, .xls)</div>
+      <div class="dropzone-hint">TXT, CSV, TSV, JSON, Excel (.xlsx, .xls)</div>
       <input type="file" id="fileInput" accept=".txt,.csv,.tsv,.json,.md,.xlsx,.xls" onchange="handleFile(event)">
     </div>
   </div>
@@ -185,7 +184,7 @@
         <button class="btn-sm danger" onclick="clearSaved()">Smazat vše</button>
       </div>
       <div id="savedList"></div>
-      <div id="savedEmpty" style="text-align:center;padding:32px;color:var(--text-dim);font-size:12px">Zatím žádné uložené tabulky.<br>Po převodu textu můžeš tabulku uložit.</div>
+      <div id="savedEmpty" style="text-align:center;padding:32px;color:var(--text-dim);font-size:12px">Zatím žádné uložené tabulky.</div>
     </div>
   </div>
   <div class="result-area" id="resultArea">
@@ -195,15 +194,15 @@
         <div><div class="stat-num" id="colCount">0</div><div class="stat-label">Sloupců</div></div>
         <div class="badge" id="methodBadge">⚙ —</div>
       </div>
-      <div class="undo-bar">
-        <button class="btn-icon" id="undoBtn" onclick="undo()" disabled title="Zpět (Ctrl+Z)">↩ Zpět</button>
-        <button class="btn-icon" id="redoBtn" onclick="redo()" disabled title="Vpřed (Ctrl+Y)">↪ Vpřed</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        <button class="btn-icon" id="undoBtn" onclick="undo()" disabled>↩ Zpět</button>
+        <button class="btn-icon" id="redoBtn" onclick="redo()" disabled>↪ Vpřed</button>
         <div class="toolbar-sep"></div>
         <button class="btn-icon" onclick="saveTable()">💾 Uložit</button>
       </div>
     </div>
     <div class="glass search-bar">
-      <input class="search-input" id="searchInput" type="text" placeholder="Hledat v tabulce..." oninput="applyFilter()">
+      <input class="search-input" id="searchInput" type="text" placeholder="🔍 Hledat v tabulce..." oninput="applyFilter()">
       <select class="filter-select" id="filterCol" onchange="applyFilter()"><option value="-1">Všechny sloupce</option></select>
       <span class="filter-count" id="filterCount"></span>
     </div>
@@ -225,101 +224,463 @@
     </div>
     <div class="table-title" id="tableTitle" style="display:none"></div>
     <div class="glass table-panel">
-      <div class="table-wrap">
-        <table id="dataTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
-      </div>
+      <div class="table-wrap"><table id="dataTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
     </div>
-    <div class="hint" id="tableHint">Klikni na záhlaví pro řazení · Dvojklik na buňku pro editaci · Ctrl+Z / Ctrl+Y</div>
+    <div class="hint">Klikni na záhlaví pro inteligentní řazení · Dvojklik na buňku = editace · Ctrl+Z/Y</div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
 <script>
-const EXAMPLES={csv:`Jméno,Věk,Město,Profese\nJan Novák,32,Praha,Programátor\nMarie Dvořáková,28,Brno,Designérka\nPetr Svoboda,45,Ostrava,Učitel\nEva Králová,37,Plzeň,Lékařka`,list:`Nákupní seznam:\n- Mléko 1l - 25 Kč\n- Chleba žitný - 42 Kč\n- Máslo 250g - 65 Kč\n- Rajčata 1kg - 49 Kč\n- Kuřecí prsa 500g - 89 Kč`,paragraph:`Škoda Kodiaq RS má motor 2.0 TSI o výkonu 245 koní. Zrychlení z 0 na 100 km/h zvládne za 6.6 sekundy. Maximální rychlost je 232 km/h. Objem kufru je 835 litrů. Hmotnost vozu činí 1799 kg. Spotřeba v kombinovaném cyklu je 8.9 l/100km.`,tabs:`Produkt\tKategorie\tCena\tSklad\niPhone 15\tTelefony\t24990\t150\nMacBook Air\tNotebooky\t32990\t45\nAirPods Pro\tSluchátka\t7490\t320\niPad Air\tTablety\t18990\t80`};
-let currentResult=null,sortCol=null,sortDir='asc',editMode=false,selectedRows=new Set(),searchText='',filterCol=-1,columnTypes=[],undoStack=[],redoStack=[];
-const MAX_UNDO=50,inputEl=document.getElementById('input');
+// ===== STATE =====
+var EXAMPLES = {
+  csv: "Jméno,Věk,Město,Profese\nJan Novák,32,Praha,Programátor\nMarie Dvořáková,28,Brno,Designérka\nPetr Svoboda,45,Ostrava,Učitel\nEva Králová,37,Plzeň,Lékařka",
+  list: "Nákupní seznam:\n- Mléko 1l - 25 Kč\n- Chleba žitný - 42 Kč\n- Máslo 250g - 65 Kč\n- Rajčata 1kg - 49 Kč\n- Kuřecí prsa 500g - 89 Kč",
+  paragraph: "Škoda Kodiaq RS má motor 2.0 TSI o výkonu 245 koní. Zrychlení z 0 na 100 km/h zvládne za 6.6 sekundy. Maximální rychlost je 232 km/h. Objem kufru je 835 litrů. Hmotnost vozu činí 1799 kg. Spotřeba v kombinovaném cyklu je 8.9 l/100km.",
+  tabs: "Produkt\tKategorie\tCena\tSklad\niPhone 15\tTelefony\t24990\t150\nMacBook Air\tNotebooky\t32990\t45\nAirPods Pro\tSluchátka\t7490\t320\niPad Air\tTablety\t18990\t80"
+};
 
-// Theme
-function toggleTheme(){const h=document.documentElement,n=h.dataset.theme==='dark'?'light':'dark';h.dataset.theme=n;document.getElementById('themeBtn').textContent=n==='dark'?'🌙':'☀️';try{localStorage.setItem('t2t_theme',n)}catch(e){}}
-(function(){try{const t=localStorage.getItem('t2t_theme');if(t){document.documentElement.dataset.theme=t;document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}}catch(e){}})();
+var currentResult = null, sortCol = null, sortDir = 'asc';
+var editMode = false, selectedRows = new Set();
+var searchText = '', filterCol = -1, columnTypes = [];
+var undoStack = [], redoStack = [], MAX_UNDO = 50;
+var inputEl = document.getElementById('input');
 
-// Input
-inputEl.addEventListener('input',()=>{const v=inputEl.value.trim();document.getElementById('convertBtn').disabled=!v;document.getElementById('clearBtn').style.display=v?'':'none';document.getElementById('charCount').textContent=v?`${v.split('\n').length} řádků · ${inputEl.value.length} znaků`:''});
-inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();convert()}});
-document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey){if(e.key==='z'&&!e.shiftKey){e.preventDefault();undo()}if(e.key==='y'||(e.key==='z'&&e.shiftKey)){e.preventDefault();redo()}}});
+// ===== THEME =====
+function toggleTheme() {
+  var h = document.documentElement;
+  var n = h.dataset.theme === 'dark' ? 'light' : 'dark';
+  h.dataset.theme = n;
+  document.getElementById('themeBtn').textContent = n === 'dark' ? '🌙' : '☀️';
+  try { localStorage.setItem('t2t_theme', n); } catch(e) {}
+}
+try { var st = localStorage.getItem('t2t_theme'); if (st) { document.documentElement.dataset.theme = st; document.getElementById('themeBtn').textContent = st === 'dark' ? '🌙' : '☀️'; } } catch(e) {}
 
-// Tabs
-function switchTab(tab){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(tab==='text'&&i===0)||(tab==='file'&&i===1)||(tab==='saved'&&i===2)));document.getElementById('tabText').style.display=tab==='text'?'':'none';document.getElementById('tabFile').style.display=tab==='file'?'':'none';document.getElementById('tabSaved').style.display=tab==='saved'?'':'none';if(tab==='saved')renderSavedList()}
+// ===== INPUT =====
+inputEl.addEventListener('input', function() {
+  var v = inputEl.value.trim();
+  document.getElementById('convertBtn').disabled = !v;
+  document.getElementById('clearBtn').style.display = v ? '' : 'none';
+  document.getElementById('charCount').textContent = v ? v.split('\n').length + ' řádků · ' + inputEl.value.length + ' znaků' : '';
+});
+inputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); convert(); } });
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+    if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) { e.preventDefault(); redo(); }
+  }
+});
 
-// Drag&drop
-const dz=document.getElementById('dropzone');
-['dragenter','dragover'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('dragover')}));
-['dragleave','drop'].forEach(e=>dz.addEventListener(e,()=>dz.classList.remove('dragover')));
-dz.addEventListener('drop',ev=>{ev.preventDefault();if(ev.dataTransfer.files[0])readFile(ev.dataTransfer.files[0])});
-function handleFile(ev){if(ev.target.files[0])readFile(ev.target.files[0])}
-function readFile(file){const ext=file.name.split('.').pop().toLowerCase();if(ext==='xlsx'||ext==='xls'){const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});if(data.length<1){toast('Prázdný Excel soubor','info');return}currentResult={headers:data[0].map(String),rows:data.slice(1).map(r=>r.map(String)),method:'Excel (.'+ext+')'};sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();searchText='';filterCol=-1;document.getElementById('searchInput').value='';undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();updateUndoButtons();switchTab('text');inputEl.value='[Načteno z Excel: '+file.name+']';inputEl.dispatchEvent(new Event('input'));toast(`Načten Excel: ${file.name} (${data.length-1} řádků)`,'success')}catch(err){toast('Chyba při čtení Excel souboru','info');console.error(err)}};r.readAsArrayBuffer(file)}else{const r=new FileReader();r.onload=e=>{switchTab('text');inputEl.value=e.target.result;inputEl.dispatchEvent(new Event('input'));toast(`Načten: ${file.name}`,'info');convert()};r.readAsText(file,'UTF-8')}}
-function loadExample(k){inputEl.value=EXAMPLES[k];inputEl.dispatchEvent(new Event('input'));document.getElementById('resultArea').classList.remove('visible')}
-function clearAll(){inputEl.value='';inputEl.dispatchEvent(new Event('input'));document.getElementById('resultArea').classList.remove('visible');currentResult=null}
+// ===== TABS =====
+function switchTab(tab) {
+  var tabs = document.querySelectorAll('.tab');
+  tabs[0].classList.toggle('active', tab === 'text');
+  tabs[1].classList.toggle('active', tab === 'file');
+  tabs[2].classList.toggle('active', tab === 'saved');
+  document.getElementById('tabText').style.display = tab === 'text' ? '' : 'none';
+  document.getElementById('tabFile').style.display = tab === 'file' ? '' : 'none';
+  document.getElementById('tabSaved').style.display = tab === 'saved' ? '' : 'none';
+  if (tab === 'saved') renderSavedList();
+}
 
-// Type detection
-function detectType(v){if(!v||!v.trim())return'text';v=v.trim();if(/^[\d\s,.]+\s*(Kč|€|\$|£|USD|EUR|CZK)$/i.test(v)||/^(Kč|€|\$|£)\s*[\d\s,.]+$/i.test(v))return'currency';if(/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}$/.test(v)||/^\d{4}-\d{2}-\d{2}/.test(v)||/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(v))return'date';const c=v.replace(/\s/g,'').replace(',','.');if(/^-?[\d.]+(%|koní|km\/h|l|kg|Kč|kW|Nm|litrů|l\/100km|mm|cm|m|sekund[ay]?|minut|hodin)?$/i.test(c))return'number';if(!isNaN(parseFloat(c))&&isFinite(c))return'number';return'text'}
-function detectColumnTypes(){if(!currentResult)return;columnTypes=currentResult.headers.map((_,ci)=>{const types=currentResult.rows.map(r=>detectType(r[ci])).filter(t=>t!=='text');if(!types.length)return'text';const counts={};types.forEach(t=>counts[t]=(counts[t]||0)+1);const d=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];return d&&d[1]>=currentResult.rows.length*0.5?d[0]:'text'})}
-function typeTag(type){const l={number:'číslo',date:'datum',currency:'měna',text:'text'},c={number:'type-num',date:'type-date',currency:'type-curr',text:'type-text'};return`<span class="type-tag ${c[type]}">${l[type]}</span>`}
+// ===== FILE HANDLING =====
+var dz = document.getElementById('dropzone');
+dz.addEventListener('dragenter', function(ev) { ev.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragover', function(ev) { ev.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+dz.addEventListener('drop', function(ev) { ev.preventDefault(); dz.classList.remove('dragover'); if (ev.dataTransfer.files[0]) readFile(ev.dataTransfer.files[0]); });
+function handleFile(ev) { if (ev.target.files[0]) readFile(ev.target.files[0]); }
 
-// Parser
-function parseTextToTable(text){const lines=text.trim().split('\n').filter(l=>l.trim());if(!lines.length)return{headers:[],rows:[]};if(lines[0].includes(',')&&lines.every(l=>l.split(',').length===lines[0].split(',').length))return{headers:lines[0].split(',').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split(',').map(c=>c.trim())),method:'CSV (čárka)'};if(lines[0].includes('\t')&&lines.every(l=>l.split('\t').length===lines[0].split('\t').length))return{headers:lines[0].split('\t').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split('\t').map(c=>c.trim())),method:'TSV (tabulátor)'};if(lines[0].includes(';')&&lines.every(l=>l.split(';').length===lines[0].split(';').length&&l.split(';').length>1))return{headers:lines[0].split(';').map(h=>h.trim()),rows:lines.slice(1).map(l=>l.split(';').map(c=>c.trim())),method:'Středník'};if(lines[0].includes('|')&&lines.every(l=>l.split('|').length===lines[0].split('|').length&&l.split('|').length>1)){const all=lines.map(l=>l.split('|').map(c=>c.trim()).filter(c=>c!==''));const f=all.filter(r=>!r.every(c=>/^[-:]+$/.test(c)));if(f.length>1)return{headers:f[0],rows:f.slice(1),method:'Pipe (|)'}}const ll=lines.filter(l=>/^\s*[-•*]\s+/.test(l));if(ll.length>=2){const tl=lines.find(l=>!/^\s*[-•*]\s+/.test(l));const items=ll.map(l=>l.replace(/^\s*[-•*]\s+/,'').trim());if(items.every(i=>i.includes(' - '))){const parts=items.map(i=>i.split(' - ').map(p=>p.trim()));const mx=Math.max(...parts.map(p=>p.length));const cn=mx===2?['Položka','Hodnota']:mx===3?['Položka','Detail','Hodnota']:Array.from({length:mx},(_,i)=>`Sloupec ${i+1}`);const rows=parts.map(p=>{while(p.length<mx)p.push('');return p});return{headers:cn,rows,method:'Seznam (pomlčka)',title:tl?.replace(/:$/,'').trim()}}return{headers:['#','Položka'],rows:items.map((it,i)=>[String(i+1),it]),method:'Seznam',title:tl?.replace(/:$/,'').trim()}}const kvP=/(.+?)\s+(?:je|má|činí|dosahuje|zvládne|nabízí|disponuje|obsahuje|váží)\s+(.+?)\.?\s*$/i;const kvPairs=lines.join(' ').split(/\.\s*/).filter(s=>s.trim()).map(s=>{const m=s.trim().match(kvP);return m?[m[1].trim(),m[2].trim()]:null}).filter(Boolean);if(kvPairs.length>=2)return{headers:['Vlastnost','Hodnota'],rows:kvPairs,method:'Věty (klíč-hodnota)'};const sents=lines.join(' ').split(/\.\s*/).filter(s=>s.trim());const numS=sents.filter(s=>/\d/.test(s));if(numS.length>=2){const rows=numS.map(s=>{const nm=s.match(/([\d\s,.]+\s*(?:koní|km\/h|l|kg|Kč|%|mm|cm|m|kW|Nm|sekund[ay]?|minut|hodin|litrů|l\/100km)?)\s*$/i)||s.match(/([\d,.]+)/);if(nm)return[s.replace(nm[0],'').trim(),nm[1].trim()];return[s.trim(),'']});return{headers:['Popis','Hodnota'],rows,method:'Extrakce čísel'}}return{headers:['#','Řádek'],rows:lines.map((l,i)=>[String(i+1),l.trim()]),method:'Řádky textu'}}
+function readFile(file) {
+  var ext = file.name.split('.').pop().toLowerCase();
 
-// Undo/Redo
-function pushUndo(){undoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));if(undoStack.length>MAX_UNDO)undoStack.shift();redoStack=[];updateUndoButtons()}
-function undo(){if(!undoStack.length||!currentResult)return;redoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));const s=JSON.parse(undoStack.pop());currentResult.headers=s.headers;currentResult.rows=s.rows;currentResult.title=s.title;detectColumnTypes();renderResult();toast('↩ Zpět','info')}
-function redo(){if(!redoStack.length||!currentResult)return;undoStack.push(JSON.stringify({headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title}));const s=JSON.parse(redoStack.pop());currentResult.headers=s.headers;currentResult.rows=s.rows;currentResult.title=s.title;detectColumnTypes();renderResult();toast('↪ Vpřed','info')}
-function updateUndoButtons(){document.getElementById('undoBtn').disabled=!undoStack.length;document.getElementById('redoBtn').disabled=!redoStack.length}
+  if (ext === 'xlsx' || ext === 'xls') {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var arrayData = new Uint8Array(e.target.result);
+        var workbook = XLSX.read(arrayData, { type: 'array' });
+        var firstSheet = workbook.SheetNames[0];
+        if (!firstSheet) { toast('Prázdný Excel', 'info'); return; }
 
-// Save/Load
-function getSaved(){try{return JSON.parse(localStorage.getItem('t2t_saved')||'[]')}catch(e){return[]}}
-function setSaved(a){try{localStorage.setItem('t2t_saved',JSON.stringify(a))}catch(e){}}
-function saveTable(){if(!currentResult)return;const name=prompt('Název tabulky:',currentResult.title||'Tabulka '+new Date().toLocaleDateString('cs'));if(!name)return;const s=getSaved();s.unshift({name,headers:currentResult.headers,rows:currentResult.rows,title:currentResult.title,method:currentResult.method,date:new Date().toISOString()});if(s.length>20)s.pop();setSaved(s);toast(`Uloženo: ${name}`,'success')}
-function loadSaved(i){const s=getSaved(),item=s[i];if(!item)return;currentResult={headers:item.headers,rows:item.rows,title:item.title,method:item.method};sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();switchTab('text');toast(`Načteno: ${item.name}`,'info')}
-function deleteSaved(i){const s=getSaved();s.splice(i,1);setSaved(s);renderSavedList()}
-function clearSaved(){if(!confirm('Opravdu smazat všechny uložené tabulky?'))return;setSaved([]);renderSavedList();toast('Uložené tabulky smazány','info')}
-function renderSavedList(){const s=getSaved(),list=document.getElementById('savedList'),empty=document.getElementById('savedEmpty');if(!s.length){list.innerHTML='';empty.style.display='';return}empty.style.display='none';list.innerHTML=s.map((x,i)=>`<div class="saved-item"><div onclick="loadSaved(${i})" style="flex:1"><div class="saved-name">${esc(x.name)}</div><div class="saved-meta">${x.rows?.length||0} řádků · ${x.headers?.length||0} sloupců · ${new Date(x.date).toLocaleDateString('cs')}</div></div><button class="btn-sm danger" onclick="event.stopPropagation();deleteSaved(${i})">✕</button></div>`).join('')}
+        var worksheet = workbook.Sheets[firstSheet];
+        var range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+        var colCount = range.e.c - range.s.c + 1;
+        var rowCount = range.e.r - range.s.r + 1;
 
-// Convert
-function convert(){const t=inputEl.value;if(!t.trim())return;currentResult=parseTextToTable(t);sortCol=null;sortDir='asc';editMode=false;selectedRows.clear();searchText='';filterCol=-1;document.getElementById('searchInput').value='';document.getElementById('editToggle').textContent='✎ Režim úprav';undoStack=[];redoStack=[];detectColumnTypes();buildFilterSelect();renderResult();updateUndoButtons()}
-function buildFilterSelect(){const sel=document.getElementById('filterCol');sel.innerHTML='<option value="-1">Všechny sloupce</option>';if(currentResult)currentResult.headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h;sel.appendChild(o)})}
+        // Build headers from first row
+        var headers = [];
+        for (var c = range.s.c; c <= range.e.c; c++) {
+          var cellAddr = XLSX.utils.encode_cell({ r: range.s.r, c: c });
+          var cell = worksheet[cellAddr];
+          headers.push(cell ? String(cell.v != null ? cell.v : '').trim() : 'Sloupec ' + (c + 1));
+        }
 
-// Filter
-function applyFilter(){searchText=document.getElementById('searchInput').value.toLowerCase().trim();filterCol=parseInt(document.getElementById('filterCol').value);renderResult()}
-function getFilteredRows(){if(!currentResult)return[];let rows=getSortedRows();if(!searchText)return rows;return rows.filter(row=>filterCol>=0?(row[filterCol]||'').toLowerCase().includes(searchText):row.some(c=>(c||'').toLowerCase().includes(searchText)))}
-function highlightText(text,search){if(!search||!text)return esc(text);const e=esc(text),s=search.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return e.replace(new RegExp(`(${s})`,'gi'),'<mark>$1</mark>')}
+        // Build data rows
+        var rows = [];
+        for (var r = range.s.r + 1; r <= range.e.r; r++) {
+          var row = [];
+          var hasData = false;
+          for (var c2 = range.s.c; c2 <= range.e.c; c2++) {
+            var addr = XLSX.utils.encode_cell({ r: r, c: c2 });
+            var cl = worksheet[addr];
+            var val = '';
+            if (cl) {
+              // Use formatted value if available, otherwise raw
+              val = cl.w != null ? String(cl.w) : (cl.v != null ? String(cl.v) : '');
+            }
+            row.push(val.trim());
+            if (val.trim()) hasData = true;
+          }
+          if (hasData) rows.push(row);
+        }
 
-// Render
-function renderResult(){if(!currentResult)return;const fr=getFilteredRows();document.getElementById('rowCount').textContent=currentResult.rows.length;document.getElementById('colCount').textContent=currentResult.headers.length;document.getElementById('methodBadge').textContent='⚙ '+(currentResult.method||'—');document.getElementById('filterCount').textContent=searchText?`${fr.length} z ${currentResult.rows.length} řádků`:'';const tEl=document.getElementById('tableTitle');if(currentResult.title){tEl.textContent=currentResult.title;tEl.style.display=''}else tEl.style.display='none';const thead=document.getElementById('tableHead');let hh='<tr>';if(editMode)hh+='<th style="width:40px;text-align:center">#</th>';currentResult.headers.forEach((h,i)=>{const tt=columnTypes[i]?typeTag(columnTypes[i]):'';if(editMode)hh+=`<th><input class="header-edit" value="${esc(h)}" onchange="renameHeader(${i},this.value)">${tt}</th>`;else hh+=`<th onclick="handleSort(${i})">${esc(h)}${tt}${sortCol===i?`<span class="sort-arrow">${sortDir==='asc'?'▲':'▼'}</span>`:''}</th>`});if(editMode)hh+='<th style="width:50px"></th>';hh+='</tr>';thead.innerHTML=hh;const tbody=document.getElementById('tableBody');let bb='';fr.forEach(row=>{const oi=currentResult.rows.indexOf(row),sel=selectedRows.has(oi);bb+=`<tr class="${sel?'selected':''}">`;if(editMode)bb+=`<td style="text-align:center"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect(${oi},this.checked)"></td>`;row.forEach((cell,ci)=>{const ct=columnTypes[ci]||'text',cls=ct==='number'?'num-cell':ct==='currency'?'curr-cell':ct==='date'?'date-cell':'';bb+=`<td class="${cls}" ondblclick="startEdit(this,${oi},${ci})">${searchText?highlightText(cell,searchText):esc(cell)}</td>`});if(editMode)bb+=`<td><button class="btn-sm danger" onclick="deleteRow(${oi})">✕</button></td>`;bb+='</tr>'});tbody.innerHTML=bb;document.getElementById('resultArea').classList.add('visible');updateUndoButtons()}
-function getSortedRows(){if(!currentResult)return[];const rows=[...currentResult.rows];if(sortCol===null)return rows;return rows.sort((a,b)=>{const va=a[sortCol]||'',vb=b[sortCol]||'';const na=parseFloat(va.replace(/\s/g,'').replace(',','.')),nb=parseFloat(vb.replace(/\s/g,'').replace(',','.'));if(!isNaN(na)&&!isNaN(nb))return sortDir==='asc'?na-nb:nb-na;return sortDir==='asc'?va.localeCompare(vb,'cs'):vb.localeCompare(va,'cs')})}
-function handleSort(i){if(sortCol===i)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=i;sortDir='asc'}renderResult()}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+        if (rows.length === 0) { toast('Excel neobsahuje data', 'info'); return; }
 
-// Editing
-function startEdit(td,ri,ci){if(td.classList.contains('editing'))return;pushUndo();const v=currentResult.rows[ri][ci];td.classList.add('editing');td.innerHTML=`<input value="${esc(v)}" onblur="finishEdit(this,${ri},${ci})" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){this.dataset.cancel='1';this.blur();}">`;td.querySelector('input').focus();td.querySelector('input').select()}
-function finishEdit(inp,ri,ci){if(inp.dataset.cancel!=='1'){currentResult.rows[ri][ci]=inp.value;detectColumnTypes()}renderResult()}
-function renameHeader(i,v){pushUndo();currentResult.headers[i]=v;buildFilterSelect()}
-function toggleEditMode(){editMode=!editMode;document.getElementById('editToggle').textContent=editMode?'✓ Hotovo':'✎ Režim úprav';renderResult()}
-function toggleSelect(i,c){if(c)selectedRows.add(i);else selectedRows.delete(i);renderResult()}
-function addRow(){if(!currentResult)return;pushUndo();currentResult.rows.push(currentResult.headers.map(()=>''));renderResult();toast('Přidán nový řádek','success')}
-function addColumn(){if(!currentResult)return;const n=prompt('Název nového sloupce:',`Sloupec ${currentResult.headers.length+1}`);if(!n)return;pushUndo();currentResult.headers.push(n);currentResult.rows.forEach(r=>r.push(''));columnTypes.push('text');buildFilterSelect();renderResult();toast(`Přidán sloupec "${n}"`,'success')}
-function deleteSelected(){if(!currentResult||!selectedRows.size){toast('Zaškrtni řádky ke smazání','info');return}pushUndo();[...selectedRows].sort((a,b)=>b-a).forEach(i=>currentResult.rows.splice(i,1));selectedRows.clear();detectColumnTypes();renderResult();toast('Řádky smazány','success')}
-function deleteRow(i){pushUndo();currentResult.rows.splice(i,1);selectedRows.delete(i);detectColumnTypes();renderResult()}
+        // Set result directly and show
+        currentResult = { headers: headers, rows: rows, method: 'Excel (' + firstSheet + ')', title: null };
+        sortCol = null; sortDir = 'asc'; editMode = false; selectedRows.clear();
+        searchText = ''; filterCol = -1;
+        document.getElementById('searchInput').value = '';
+        document.getElementById('editToggle').textContent = '✎ Režim úprav';
+        undoStack = []; redoStack = [];
+        detectColumnTypes();
+        buildFilterSelect();
+        renderResult();
+        updateUndoButtons();
 
-// Toast
-function toast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),2500)}
+        // Update text tab info
+        switchTab('text');
+        inputEl.value = '[Excel: ' + file.name + ' | ' + rows.length + ' řádků × ' + headers.length + ' sloupců]';
+        document.getElementById('convertBtn').disabled = true;
+        document.getElementById('clearBtn').style.display = '';
+        document.getElementById('charCount').textContent = rows.length + ' řádků · ' + headers.length + ' sloupců';
+        toast('Načten: ' + file.name + ' (' + rows.length + ' řádků)', 'success');
 
-// Copy & Exports
-function copyTable(){if(!currentResult)return;const rows=getFilteredRows(),text=[currentResult.headers.join('\t'),...rows.map(r=>r.join('\t'))].join('\n');navigator.clipboard.writeText(text).then(()=>toast('Zkopírováno do schránky'))}
-function exportCSV(){if(!currentResult)return;const rows=getFilteredRows(),e=v=>'"'+String(v).replace(/"/g,'""')+'"';dl('\uFEFF'+[currentResult.headers.map(e).join(','),...rows.map(r=>r.map(e).join(','))].join('\n'),'tabulka.csv','text/csv;charset=utf-8');toast('CSV exportováno')}
-function exportExcel(){if(!currentResult)return;const rows=getFilteredRows(),data=[currentResult.headers,...rows],ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=currentResult.headers.map((h,i)=>({wch:Math.min(Math.max(h.length,...rows.map(r=>(r[i]||'').length))+4,40)}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data');XLSX.writeFile(wb,'tabulka.xlsx');toast('Excel exportován')}
-function exportPDF(){if(!currentResult)return;const{jsPDF}=window.jspdf,doc=new jsPDF({orientation:currentResult.headers.length>5?'l':'p'});doc.setFontSize(16);doc.text(currentResult.title||'Tabulka',14,20);doc.autoTable({head:[currentResult.headers],body:getFilteredRows(),startY:30,styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[245,158,11],textColor:[10,10,15],fontStyle:'bold'},alternateRowStyles:{fillColor:[245,245,240]}});doc.save('tabulka.pdf');toast('PDF exportováno')}
-function exportMarkdown(){if(!currentResult)return;const rows=getFilteredRows(),md=(currentResult.title?`## ${currentResult.title}\n\n`:'')+'| '+currentResult.headers.join(' | ')+' |\n| '+currentResult.headers.map(()=>'---').join(' | ')+' |\n'+rows.map(r=>'| '+r.join(' | ')+' |').join('\n');dl(md,'tabulka.md','text/markdown;charset=utf-8');toast('Markdown exportován')}
-function exportJSON(){if(!currentResult)return;const rows=getFilteredRows(),data=rows.map(r=>{const o={};currentResult.headers.forEach((h,i)=>o[h]=r[i]||'');return o});dl(JSON.stringify(data,null,2),'tabulka.json','application/json;charset=utf-8');toast('JSON exportován')}
-function dl(c,f,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=f;a.click();URL.revokeObjectURL(u)}
+      } catch (err) {
+        console.error('Excel error:', err);
+        toast('Chyba: ' + err.message, 'info');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    var reader2 = new FileReader();
+    reader2.onload = function(e) {
+      switchTab('text');
+      inputEl.value = e.target.result;
+      inputEl.dispatchEvent(new Event('input'));
+      toast('Načten: ' + file.name, 'info');
+      convert();
+    };
+    reader2.readAsText(file, 'UTF-8');
+  }
+}
+
+function loadExample(k) { inputEl.value = EXAMPLES[k]; inputEl.dispatchEvent(new Event('input')); document.getElementById('resultArea').classList.remove('visible'); }
+function clearAll() { inputEl.value = ''; inputEl.dispatchEvent(new Event('input')); document.getElementById('resultArea').classList.remove('visible'); currentResult = null; }
+
+// ===== TYPE DETECTION =====
+function detectType(v) {
+  if (!v || !v.trim()) return 'text';
+  var s = v.trim();
+  if (/^[\d\s,.]+\s*(Kč|€|\$|£|USD|EUR|CZK)$/i.test(s) || /^(Kč|€|\$|£)\s*[\d\s,.]+$/i.test(s)) return 'currency';
+  if (/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}$/.test(s) || /^\d{4}-\d{2}-\d{2}/.test(s) || /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)) return 'date';
+  var c = s.replace(/\s/g, '').replace(',', '.');
+  if (/^-?[\d.]+(%|koní|km\/h|l|kg|Kč|kW|Nm|litrů|l\/100km|mm|cm|m|sekund[ay]?|minut|hodin)?$/i.test(c)) return 'number';
+  if (!isNaN(parseFloat(c)) && isFinite(c)) return 'number';
+  return 'text';
+}
+function detectColumnTypes() {
+  if (!currentResult) return;
+  columnTypes = currentResult.headers.map(function(_, ci) {
+    var types = currentResult.rows.map(function(r) { return detectType(r[ci]); }).filter(function(t) { return t !== 'text'; });
+    if (!types.length) return 'text';
+    var counts = {};
+    types.forEach(function(t) { counts[t] = (counts[t] || 0) + 1; });
+    var entries = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; });
+    return entries[0][1] >= currentResult.rows.length * 0.4 ? entries[0][0] : 'text';
+  });
+}
+function typeTag(type) {
+  var l = { number: 'číslo', date: 'datum', currency: 'měna', text: 'text' };
+  var c = { number: 'type-num', date: 'type-date', currency: 'type-curr', text: 'type-text' };
+  return '<span class="type-tag ' + c[type] + '">' + l[type] + '</span>';
+}
+
+// ===== SMART SORT =====
+function extractNumber(v) {
+  if (!v) return NaN;
+  // Remove units and whitespace, normalize decimal
+  var cleaned = v.replace(/\s/g, '').replace(/[^\d.,-]/g, '').replace(',', '.');
+  // Handle multiple dots (thousand separators like 1.234.567)
+  var parts = cleaned.split('.');
+  if (parts.length > 2) {
+    cleaned = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1];
+  }
+  return parseFloat(cleaned);
+}
+
+function parseDate(v) {
+  if (!v) return null;
+  var s = v.trim();
+  // DD.MM.YYYY
+  var m1 = s.match(/^(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{2,4})$/);
+  if (m1) return new Date(m1[3].length === 2 ? 2000 + parseInt(m1[3]) : parseInt(m1[3]), parseInt(m1[2]) - 1, parseInt(m1[1]));
+  // YYYY-MM-DD
+  var m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m2) return new Date(parseInt(m2[1]), parseInt(m2[2]) - 1, parseInt(m2[3]));
+  // MM/DD/YYYY
+  var m3 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (m3) return new Date(m3[3].length === 2 ? 2000 + parseInt(m3[3]) : parseInt(m3[3]), parseInt(m3[1]) - 1, parseInt(m3[2]));
+  return null;
+}
+
+function smartSort(rows, colIdx, direction) {
+  var type = columnTypes[colIdx] || 'text';
+
+  return rows.sort(function(a, b) {
+    var va = a[colIdx] || '', vb = b[colIdx] || '';
+    // Empty values always last
+    if (!va.trim() && vb.trim()) return 1;
+    if (va.trim() && !vb.trim()) return -1;
+    if (!va.trim() && !vb.trim()) return 0;
+
+    var result = 0;
+
+    if (type === 'number' || type === 'currency') {
+      var na = extractNumber(va), nb = extractNumber(vb);
+      if (!isNaN(na) && !isNaN(nb)) {
+        result = na - nb;
+      } else {
+        result = va.localeCompare(vb, 'cs');
+      }
+    } else if (type === 'date') {
+      var da = parseDate(va), db = parseDate(vb);
+      if (da && db) {
+        result = da.getTime() - db.getTime();
+      } else {
+        result = va.localeCompare(vb, 'cs');
+      }
+    } else {
+      // Smart text sort - try number first, then natural sort
+      var tna = extractNumber(va), tnb = extractNumber(vb);
+      if (!isNaN(tna) && !isNaN(tnb)) {
+        result = tna - tnb;
+      } else {
+        // Natural sort: "Item 2" before "Item 10"
+        result = va.localeCompare(vb, 'cs', { numeric: true, sensitivity: 'base' });
+      }
+    }
+
+    return direction === 'asc' ? result : -result;
+  });
+}
+
+// ===== PARSER =====
+function parseTextToTable(text) {
+  var lines = text.trim().split('\n').filter(function(l) { return l.trim(); });
+  if (!lines.length) return { headers: [], rows: [] };
+
+  // CSV
+  if (lines[0].includes(',') && lines.every(function(l) { return l.split(',').length === lines[0].split(',').length; })) {
+    return { headers: lines[0].split(',').map(function(h) { return h.trim(); }), rows: lines.slice(1).map(function(l) { return l.split(',').map(function(c) { return c.trim(); }); }), method: 'CSV (čárka)' };
+  }
+  // TSV
+  if (lines[0].includes('\t') && lines.every(function(l) { return l.split('\t').length === lines[0].split('\t').length; })) {
+    return { headers: lines[0].split('\t').map(function(h) { return h.trim(); }), rows: lines.slice(1).map(function(l) { return l.split('\t').map(function(c) { return c.trim(); }); }), method: 'TSV (tabulátor)' };
+  }
+  // Semicolon
+  if (lines[0].includes(';') && lines.every(function(l) { return l.split(';').length === lines[0].split(';').length && l.split(';').length > 1; })) {
+    return { headers: lines[0].split(';').map(function(h) { return h.trim(); }), rows: lines.slice(1).map(function(l) { return l.split(';').map(function(c) { return c.trim(); }); }), method: 'Středník' };
+  }
+  // Pipe
+  if (lines[0].includes('|') && lines.every(function(l) { return l.split('|').length === lines[0].split('|').length && l.split('|').length > 1; })) {
+    var all = lines.map(function(l) { return l.split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c !== ''; }); });
+    var filtered = all.filter(function(r) { return !r.every(function(c) { return /^[-:]+$/.test(c); }); });
+    if (filtered.length > 1) return { headers: filtered[0], rows: filtered.slice(1), method: 'Pipe (|)' };
+  }
+  // List
+  var listLines = lines.filter(function(l) { return /^\s*[-•*]\s+/.test(l); });
+  if (listLines.length >= 2) {
+    var titleLine = lines.find(function(l) { return !/^\s*[-•*]\s+/.test(l); });
+    var items = listLines.map(function(l) { return l.replace(/^\s*[-•*]\s+/, '').trim(); });
+    if (items.every(function(i) { return i.includes(' - '); })) {
+      var parts = items.map(function(i) { return i.split(' - ').map(function(p) { return p.trim(); }); });
+      var mx = Math.max.apply(null, parts.map(function(p) { return p.length; }));
+      var cn = mx === 2 ? ['Položka', 'Hodnota'] : mx === 3 ? ['Položka', 'Detail', 'Hodnota'] : Array.from({ length: mx }, function(_, i) { return 'Sloupec ' + (i + 1); });
+      var rows = parts.map(function(p) { while (p.length < mx) p.push(''); return p; });
+      return { headers: cn, rows: rows, method: 'Seznam (pomlčka)', title: titleLine ? titleLine.replace(/:$/, '').trim() : null };
+    }
+    return { headers: ['#', 'Položka'], rows: items.map(function(it, i) { return [String(i + 1), it]; }), method: 'Seznam', title: titleLine ? titleLine.replace(/:$/, '').trim() : null };
+  }
+  // Key-value sentences
+  var kvP = /(.+?)\s+(?:je|má|činí|dosahuje|zvládne|nabízí|disponuje|obsahuje|váží)\s+(.+?)\.?\s*$/i;
+  var kvPairs = lines.join(' ').split(/\.\s*/).filter(function(s) { return s.trim(); }).map(function(s) { var m = s.trim().match(kvP); return m ? [m[1].trim(), m[2].trim()] : null; }).filter(Boolean);
+  if (kvPairs.length >= 2) return { headers: ['Vlastnost', 'Hodnota'], rows: kvPairs, method: 'Věty (klíč-hodnota)' };
+  // Number extraction
+  var sents = lines.join(' ').split(/\.\s*/).filter(function(s) { return s.trim(); });
+  var numS = sents.filter(function(s) { return /\d/.test(s); });
+  if (numS.length >= 2) {
+    var nrows = numS.map(function(s) {
+      var nm = s.match(/([\d\s,.]+\s*(?:koní|km\/h|l|kg|Kč|%|mm|cm|m|kW|Nm|sekund[ay]?|minut|hodin|litrů|l\/100km)?)\s*$/i) || s.match(/([\d,.]+)/);
+      if (nm) return [s.replace(nm[0], '').trim(), nm[1].trim()];
+      return [s.trim(), ''];
+    });
+    return { headers: ['Popis', 'Hodnota'], rows: nrows, method: 'Extrakce čísel' };
+  }
+  // Fallback
+  return { headers: ['#', 'Řádek'], rows: lines.map(function(l, i) { return [String(i + 1), l.trim()]; }), method: 'Řádky textu' };
+}
+
+// ===== UNDO / REDO =====
+function pushUndo() { undoStack.push(JSON.stringify({ headers: currentResult.headers, rows: currentResult.rows, title: currentResult.title })); if (undoStack.length > MAX_UNDO) undoStack.shift(); redoStack = []; updateUndoButtons(); }
+function undo() { if (!undoStack.length || !currentResult) return; redoStack.push(JSON.stringify({ headers: currentResult.headers, rows: currentResult.rows, title: currentResult.title })); var s = JSON.parse(undoStack.pop()); currentResult.headers = s.headers; currentResult.rows = s.rows; currentResult.title = s.title; detectColumnTypes(); renderResult(); toast('↩ Zpět', 'info'); }
+function redo() { if (!redoStack.length || !currentResult) return; undoStack.push(JSON.stringify({ headers: currentResult.headers, rows: currentResult.rows, title: currentResult.title })); var s = JSON.parse(redoStack.pop()); currentResult.headers = s.headers; currentResult.rows = s.rows; currentResult.title = s.title; detectColumnTypes(); renderResult(); toast('↪ Vpřed', 'info'); }
+function updateUndoButtons() { document.getElementById('undoBtn').disabled = !undoStack.length; document.getElementById('redoBtn').disabled = !redoStack.length; }
+
+// ===== SAVE / LOAD =====
+function getSaved() { try { return JSON.parse(localStorage.getItem('t2t_saved') || '[]'); } catch(e) { return []; } }
+function setSaved(a) { try { localStorage.setItem('t2t_saved', JSON.stringify(a)); } catch(e) {} }
+function saveTable() { if (!currentResult) return; var name = prompt('Název tabulky:', currentResult.title || 'Tabulka ' + new Date().toLocaleDateString('cs')); if (!name) return; var s = getSaved(); s.unshift({ name: name, headers: currentResult.headers, rows: currentResult.rows, title: currentResult.title, method: currentResult.method, date: new Date().toISOString() }); if (s.length > 20) s.pop(); setSaved(s); toast('Uloženo: ' + name, 'success'); }
+function loadSaved(i) { var s = getSaved(), item = s[i]; if (!item) return; currentResult = { headers: item.headers, rows: item.rows, title: item.title, method: item.method }; sortCol = null; sortDir = 'asc'; editMode = false; selectedRows.clear(); undoStack = []; redoStack = []; detectColumnTypes(); buildFilterSelect(); renderResult(); switchTab('text'); toast('Načteno: ' + item.name, 'info'); }
+function deleteSaved(i) { var s = getSaved(); s.splice(i, 1); setSaved(s); renderSavedList(); }
+function clearSaved() { if (!confirm('Smazat všechny uložené tabulky?')) return; setSaved([]); renderSavedList(); toast('Smazáno', 'info'); }
+function renderSavedList() { var s = getSaved(), list = document.getElementById('savedList'), empty = document.getElementById('savedEmpty'); if (!s.length) { list.innerHTML = ''; empty.style.display = ''; return; } empty.style.display = 'none'; list.innerHTML = s.map(function(x, i) { return '<div class="saved-item"><div onclick="loadSaved(' + i + ')" style="flex:1"><div class="saved-name">' + esc(x.name) + '</div><div class="saved-meta">' + (x.rows ? x.rows.length : 0) + ' řádků · ' + (x.headers ? x.headers.length : 0) + ' sloupců · ' + new Date(x.date).toLocaleDateString('cs') + '</div></div><button class="btn-sm danger" onclick="event.stopPropagation();deleteSaved(' + i + ')">✕</button></div>'; }).join(''); }
+
+// ===== CONVERT =====
+function convert() {
+  var text = inputEl.value;
+  if (!text.trim()) return;
+  currentResult = parseTextToTable(text);
+  sortCol = null; sortDir = 'asc'; editMode = false; selectedRows.clear();
+  searchText = ''; filterCol = -1;
+  document.getElementById('searchInput').value = '';
+  document.getElementById('editToggle').textContent = '✎ Režim úprav';
+  undoStack = []; redoStack = [];
+  detectColumnTypes(); buildFilterSelect(); renderResult(); updateUndoButtons();
+}
+function buildFilterSelect() {
+  var sel = document.getElementById('filterCol');
+  sel.innerHTML = '<option value="-1">Všechny sloupce</option>';
+  if (currentResult) currentResult.headers.forEach(function(h, i) { var o = document.createElement('option'); o.value = i; o.textContent = h; sel.appendChild(o); });
+}
+
+// ===== FILTER =====
+function applyFilter() { searchText = document.getElementById('searchInput').value.toLowerCase().trim(); filterCol = parseInt(document.getElementById('filterCol').value); renderResult(); }
+function getFilteredRows() {
+  if (!currentResult) return [];
+  var rows = getSortedRows();
+  if (!searchText) return rows;
+  return rows.filter(function(row) {
+    if (filterCol >= 0) return (row[filterCol] || '').toLowerCase().indexOf(searchText) >= 0;
+    return row.some(function(c) { return (c || '').toLowerCase().indexOf(searchText) >= 0; });
+  });
+}
+function highlightText(text, search) {
+  if (!search || !text) return esc(text);
+  var e = esc(text), s = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return e.replace(new RegExp('(' + s + ')', 'gi'), '<mark>$1</mark>');
+}
+
+// ===== RENDER =====
+function renderResult() {
+  if (!currentResult) return;
+  var fr = getFilteredRows();
+  document.getElementById('rowCount').textContent = currentResult.rows.length;
+  document.getElementById('colCount').textContent = currentResult.headers.length;
+  document.getElementById('methodBadge').textContent = '⚙ ' + (currentResult.method || '—');
+  document.getElementById('filterCount').textContent = searchText ? fr.length + ' z ' + currentResult.rows.length + ' řádků' : '';
+
+  var tEl = document.getElementById('tableTitle');
+  if (currentResult.title) { tEl.textContent = currentResult.title; tEl.style.display = ''; } else tEl.style.display = 'none';
+
+  // Header
+  var thead = document.getElementById('tableHead');
+  var hh = '<tr>';
+  if (editMode) hh += '<th style="width:40px;text-align:center">#</th>';
+  currentResult.headers.forEach(function(h, i) {
+    var tt = columnTypes[i] ? typeTag(columnTypes[i]) : '';
+    var sortInfo = '';
+    if (sortCol === i) {
+      sortInfo = '<span class="sort-arrow">' + (sortDir === 'asc' ? '▲' : '▼') + '</span>';
+    }
+    if (editMode) {
+      hh += '<th><input class="header-edit" value="' + esc(h) + '" onchange="renameHeader(' + i + ',this.value)">' + tt + '</th>';
+    } else {
+      hh += '<th onclick="handleSort(' + i + ')">' + esc(h) + tt + sortInfo + '</th>';
+    }
+  });
+  if (editMode) hh += '<th style="width:50px"></th>';
+  hh += '</tr>';
+  thead.innerHTML = hh;
+
+  // Body
+  var tbody = document.getElementById('tableBody');
+  var bb = '';
+  fr.forEach(function(row) {
+    var oi = currentResult.rows.indexOf(row);
+    var sel = selectedRows.has(oi);
+    bb += '<tr class="' + (sel ? 'selected' : '') + '">';
+    if (editMode) bb += '<td style="text-align:center"><input type="checkbox" ' + (sel ? 'checked' : '') + ' onchange="toggleSelect(' + oi + ',this.checked)"></td>';
+    row.forEach(function(cell, ci) {
+      var ct = columnTypes[ci] || 'text';
+      var cls = ct === 'number' ? 'num-cell' : ct === 'currency' ? 'curr-cell' : ct === 'date' ? 'date-cell' : '';
+      var display = searchText ? highlightText(cell, searchText) : esc(cell);
+      bb += '<td class="' + cls + '" ondblclick="startEdit(this,' + oi + ',' + ci + ')">' + display + '</td>';
+    });
+    if (editMode) bb += '<td><button class="btn-sm danger" onclick="deleteRow(' + oi + ')">✕</button></td>';
+    bb += '</tr>';
+  });
+  tbody.innerHTML = bb;
+  document.getElementById('resultArea').classList.add('visible');
+  updateUndoButtons();
+}
+
+function getSortedRows() {
+  if (!currentResult) return [];
+  var rows = currentResult.rows.slice();
+  if (sortCol === null) return rows;
+  return smartSort(rows, sortCol, sortDir);
+}
+
+function handleSort(i) {
+  if (sortCol === i) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCol = i; sortDir = 'asc'; }
+  renderResult();
+}
+
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ===== EDITING =====
+function startEdit(td, ri, ci) {
+  if (td.classList.contains('editing')) return;
+  pushUndo();
+  var v = currentResult.rows[ri][ci];
+  td.classList.add('editing');
+  td.innerHTML = '<input value="' + esc(v) + '" onblur="finishEdit(this,' + ri + ',' + ci + ')" onkeydown="if(event.key===\'Enter\')this.blur();if(event.key===\'Escape\'){this.dataset.cancel=\'1\';this.blur();}">';
+  td.querySelector('input').focus();
+  td.querySelector('input').select();
+}
+function finishEdit(inp, ri, ci) { if (inp.dataset.cancel !== '1') { currentResult.rows[ri][ci] = inp.value; detectColumnTypes(); } renderResult(); }
+function renameHeader(i, v) { pushUndo(); currentResult.headers[i] = v; buildFilterSelect(); }
+function toggleEditMode() { editMode = !editMode; document.getElementById('editToggle').textContent = editMode ? '✓ Hotovo' : '✎ Režim úprav'; renderResult(); }
+function toggleSelect(i, c) { if (c) selectedRows.add(i); else selectedRows.delete(i); renderResult(); }
+function addRow() { if (!currentResult) return; pushUndo(); currentResult.rows.push(currentResult.headers.map(function() { return ''; })); renderResult(); toast('Přidán řádek', 'success'); }
+function addColumn() { if (!currentResult) return; var n = prompt('Název sloupce:', 'Sloupec ' + (currentResult.headers.length + 1)); if (!n) return; pushUndo(); currentResult.headers.push(n); currentResult.rows.forEach(function(r) { r.push(''); }); columnTypes.push('text'); buildFilterSelect(); renderResult(); toast('Přidán sloupec', 'success'); }
+function deleteSelected() { if (!currentResult || !selectedRows.size) { toast('Zaškrtni řádky ke smazání', 'info'); return; } pushUndo(); Array.from(selectedRows).sort(function(a, b) { return b - a; }).forEach(function(i) { currentResult.rows.splice(i, 1); }); selectedRows.clear(); detectColumnTypes(); renderResult(); toast('Smazáno', 'success'); }
+function deleteRow(i) { pushUndo(); currentResult.rows.splice(i, 1); selectedRows.delete(i); detectColumnTypes(); renderResult(); }
+
+// ===== TOAST =====
+function toast(m, t) { var el = document.getElementById('toast'); el.textContent = m; el.className = 'toast ' + (t || 'success') + ' show'; setTimeout(function() { el.classList.remove('show'); }, 2500); }
+
+// ===== EXPORTS =====
+function copyTable() { if (!currentResult) return; var rows = getFilteredRows(); var text = [currentResult.headers.join('\t')].concat(rows.map(function(r) { return r.join('\t'); })).join('\n'); navigator.clipboard.writeText(text).then(function() { toast('Zkopírováno'); }); }
+function exportCSV() { if (!currentResult) return; var rows = getFilteredRows(); var e = function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }; dl('\uFEFF' + [currentResult.headers.map(e).join(',')].concat(rows.map(function(r) { return r.map(e).join(','); })).join('\n'), 'tabulka.csv', 'text/csv;charset=utf-8'); toast('CSV exportováno'); }
+function exportExcel() { if (!currentResult) return; var rows = getFilteredRows(); var data = [currentResult.headers].concat(rows); var ws = XLSX.utils.aoa_to_sheet(data); ws['!cols'] = currentResult.headers.map(function(h, i) { return { wch: Math.min(Math.max(h.length, Math.max.apply(null, rows.map(function(r) { return (r[i] || '').length; }))) + 4, 40) }; }); var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data'); XLSX.writeFile(wb, 'tabulka.xlsx'); toast('Excel exportován'); }
+function exportPDF() { if (!currentResult) return; var j = window.jspdf.jsPDF; var doc = new j({ orientation: currentResult.headers.length > 5 ? 'l' : 'p' }); doc.setFontSize(16); doc.text(currentResult.title || 'Tabulka', 14, 20); doc.autoTable({ head: [currentResult.headers], body: getFilteredRows(), startY: 30, styles: { fontSize: 9, cellPadding: 4 }, headStyles: { fillColor: [245, 158, 11], textColor: [10, 10, 15], fontStyle: 'bold' }, alternateRowStyles: { fillColor: [245, 245, 240] } }); doc.save('tabulka.pdf'); toast('PDF exportováno'); }
+function exportMarkdown() { if (!currentResult) return; var rows = getFilteredRows(); var md = (currentResult.title ? '## ' + currentResult.title + '\n\n' : '') + '| ' + currentResult.headers.join(' | ') + ' |\n| ' + currentResult.headers.map(function() { return '---'; }).join(' | ') + ' |\n' + rows.map(function(r) { return '| ' + r.join(' | ') + ' |'; }).join('\n'); dl(md, 'tabulka.md', 'text/markdown;charset=utf-8'); toast('Markdown exportován'); }
+function exportJSON() { if (!currentResult) return; var rows = getFilteredRows(); var data = rows.map(function(r) { var o = {}; currentResult.headers.forEach(function(h, i) { o[h] = r[i] || ''; }); return o; }); dl(JSON.stringify(data, null, 2), 'tabulka.json', 'application/json;charset=utf-8'); toast('JSON exportován'); }
+function dl(c, f, t) { var b = new Blob([c], { type: t }); var u = URL.createObjectURL(b); var a = document.createElement('a'); a.href = u; a.download = f; a.click(); URL.revokeObjectURL(u); }
 </script>
 </body>
 </html>
